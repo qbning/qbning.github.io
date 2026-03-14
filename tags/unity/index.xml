@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Unity on qbning&#39;s site</title>
+    <link>https://qbning.github.io/tags/unity/</link>
+    <description>Recent content in Unity on qbning&#39;s site</description>
+    <image>
+      <title>qbning&#39;s site</title>
+      <url>https://avatars.githubusercontent.com/u/88238811?v=4</url>
+      <link>https://avatars.githubusercontent.com/u/88238811?v=4</link>
+    </image>
+    <generator>Hugo -- 0.148.1</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sat, 06 Sep 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://qbning.github.io/tags/unity/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>记一次Unity资源解包</title>
+      <link>https://qbning.github.io/posts/%E8%AE%B0%E4%B8%80%E6%AC%A1unity%E8%B5%84%E6%BA%90%E8%A7%A3%E5%8C%85/</link>
+      <pubDate>Sat, 06 Sep 2025 00:00:00 +0000</pubDate>
+      <guid>https://qbning.github.io/posts/%E8%AE%B0%E4%B8%80%E6%AC%A1unity%E8%B5%84%E6%BA%90%E8%A7%A3%E5%8C%85/</guid>
+      <description>&lt;h2 id=&#34;免责声明&#34;&gt;免责声明&lt;/h2&gt;
+&lt;p&gt;本文仅用于技术研究与学习交流目的，不鼓励、不支持任何对游戏内容的非法提取、篡改、传播或商业利用。所有操作均基于开源工具对本地已购游戏文件进行的逆向分析，未涉及服务器端数据、未破解DRM、未分发任何游戏资源。&lt;/p&gt;
+&lt;p&gt;文中所展示的截图与代码片段，仅为说明分析过程，不包含完整资源或可执行内容。&lt;/p&gt;
+&lt;p&gt;游戏版权归其原开发商与发行商所有。本博客无意侵犯任何知识产权，若权利方认为内容存在不当之处，请在评论区留言，我将第一时间配合处理。&lt;/p&gt;
+&lt;p&gt;技术无罪，善用为本。请读者遵守当地法律法规及游戏用户协议，切勿将本文内容用于非法用途。&lt;/p&gt;
+&lt;h2 id=&#34;使用工具&#34;&gt;使用工具&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/aelurum/AssetStudio&#34; target=&#34;_blank&#34;&gt;AssetStudio&lt;/a&gt; : 提取资源&lt;br&gt;
+&lt;a href=&#34;https://github.com/dnSpyEx/dnSpy&#34; target=&#34;_blank&#34;&gt;Dnspy&lt;/a&gt; : 寻找代码中的加密逻辑&lt;br&gt;
+&lt;a href=&#34;https://the-x.cn/encodings/Base64.aspx&#34; target=&#34;_blank&#34;&gt;在线Base64解码&lt;/a&gt; : Base64解码&lt;/p&gt;
+&lt;h2 id=&#34;背景&#34;&gt;背景&lt;/h2&gt;
+&lt;p&gt;某游戏汉化堪忧，于是尝试自己获取游戏的英文文本，用大语言模型翻译，也是作为萌新解包的一个记录&lt;/p&gt;
+&lt;h2 id=&#34;提取资源&#34;&gt;提取资源&lt;/h2&gt;
+&lt;p&gt;这一步比较简单，打开AssetStudio软件，选择&lt;code&gt;File&lt;/code&gt;-&amp;gt;&lt;code&gt;Load folder&lt;/code&gt;，无视关于版本的报错，待加载完成后直接&lt;code&gt;Export&lt;/code&gt;-&amp;gt;&lt;code&gt;All assets&lt;/code&gt;到一个目录即可。
+在途中可以看看感兴趣的内容的浏览。&lt;br&gt;
+
+  &lt;img loading=&#34;lazy&#34; src=&#34;https://qbning.github.io/img/记一次Unity资源解包/01.png&#34;&gt;&lt;br&gt;
+例如这里能看到是一串肉眼看不出有什么意义的代码，甚至base64解码后也无意义。观察类似文件的base64解码，似乎都带有&lt;code&gt;82 84 74 42 6E 29 3A 0F  BD 28 78 28 E4 37 21 3D&lt;/code&gt;作为最开始的字节，但并没有现成的文件类型。&lt;br&gt;
+
+  &lt;img loading=&#34;lazy&#34; src=&#34;https://qbning.github.io/img/记一次Unity资源解包/02.png&#34;&gt;
+那么是否就是资源提取有问题呢？在这里考虑到Unity和C#关系紧密，可以使用dnspy碰碰运气&lt;/p&gt;
+&lt;h2 id=&#34;反编译&#34;&gt;反编译&lt;/h2&gt;
+&lt;p&gt;首先找找游戏目录下有没有&amp;quot;Assembly-CSharp.dll&amp;quot;的文件，用dnspy打开(这是找的网上的)&lt;/p&gt;
+&lt;p&gt;依次展开，先随便看看。不过找了找似乎没有直接看到什么感兴趣的东西，那么就去找找类型引用&lt;/p&gt;
+&lt;p&gt;在类型引用里，我们可以看到&lt;code&gt;LocalisedString&lt;/code&gt;这个类型，应该是和语言本地化有关的，双击过去看看。&lt;/p&gt;
+&lt;p&gt;
+  &lt;img loading=&#34;lazy&#34; src=&#34;https://qbning.github.io/img/记一次Unity资源解包/03.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;可以看到很多方法的实现都依赖&lt;code&gt;Language&lt;/code&gt;，Ctrl+左键点过去看看&lt;/p&gt;
+&lt;p&gt;
+  &lt;img loading=&#34;lazy&#34; src=&#34;https://qbning.github.io/img/记一次Unity资源解包/04.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;从&lt;code&gt;Language()&lt;/code&gt;一路&lt;code&gt;LoadLanguage()&lt;/code&gt;到&lt;code&gt;SwitchLanguage()&lt;/code&gt;再到&lt;code&gt;DoSwitch&lt;/code&gt;，最后我们找到了&lt;code&gt;GetLanguageFileContents&lt;/code&gt;，可以看到其最后调用了&lt;code&gt;Encryption.Decrypt()&lt;/code&gt;，那么接下来就是去寻找解密函数，然后自己实现就可以了。
+
+  &lt;img loading=&#34;lazy&#34; src=&#34;https://qbning.github.io/img/记一次Unity资源解包/05.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;让AI帮忙用py写了脚本，测试确实输出了英文文本。&lt;/p&gt;
+&lt;p&gt;
+  &lt;img loading=&#34;lazy&#34; src=&#34;https://qbning.github.io/img/记一次Unity资源解包/06.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;接下来就可以自己尝试翻译了。翻译完成后可以用&lt;a href=&#34;https://github.com/SeriousCache/UABE&#34; target=&#34;_blank&#34;&gt;UABE&lt;/a&gt;进行再次封包了&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

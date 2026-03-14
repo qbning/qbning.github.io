@@ -1,0 +1,262 @@
+<!doctype html><html lang=en dir=auto><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Markdown 样例 | qbning's site</title><meta name=keywords content="markdown"><meta name=description content='原文为Markdown Cheatsheet Demo,结合本主题进行了改动。
+基础格式
+这是一个普通的段落。这段文字是加粗的。 但这部分不是！斜体字看起来也不错？ 那我们来 组合一下。没错就是这样！也可以高亮代码，比如 MyFunction()。好人总会加上超链接，所以 点这里 或者访问 http://www.example.com。
+
+标题 H1 到 H6
+H1 标题
+H2 标题
+H3 标题
+H4 标题
+H5 标题
+H6 标题
+
+脚注
+有时候你想给一段话加上脚注。这是第一个脚注的例子 [1]。你甚至还可以添加带链接的脚注 [2]！
+
+引用
+
+前途是光明的，道路是曲折的。
+注意： 本主题不支持嵌套引用块。
+
+列表
+
+第一个有序列表项
+第二个有序列表项
+
+
+无序列表使用星号
+
+
+或者减号
+
+
+或者加号
+
+
+
+
+
+代码块
+
+
+ 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+
+
+var 模块模式 = (function() {
+    var sum = 0;
+
+    return {
+        add: function() {
+            sum += 1;
+            return sum;
+        },
+        reset: function() {
+            return sum = 0;
+        }
+    };
+}());
+
+alert(模块模式.add());    // 弹出: 1
+alert(模块模式.add());    // 弹出: 2
+alert(模块模式.reset());  // 弹出: 0
+
+
+
+
+1
+2
+
+
+s = "Python 语法高亮"
+print(s)
+
+
+没有指定语言，因此不会高亮。
+不过我们可以加入一些 <b>HTML标签</b>。
+$$ E = mc^2 $$
+
+
+
+隐藏内容
+
+
+
+  点击展开
+
+  答案是 42'><meta name=author content="qbning"><link rel=canonical href=https://qbning.github.io/posts/markdown%E6%A0%B7%E4%BE%8B/><link crossorigin=anonymous href=/assets/css/stylesheet.css rel="preload stylesheet" as=style><link rel=icon href="https://avatars.githubusercontent.com/u/88238811?v=4"><link rel=icon type=image/png sizes=16x16 href="https://avatars.githubusercontent.com/u/88238811?v=4"><link rel=icon type=image/png sizes=32x32 href="https://avatars.githubusercontent.com/u/88238811?v=4"><link rel=apple-touch-icon href="https://avatars.githubusercontent.com/u/88238811?v=4"><link rel=mask-icon href=https://qbning.github.io/safari-pinned-tab.svg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><link rel=alternate hreflang=en href=https://qbning.github.io/posts/markdown%E6%A0%B7%E4%BE%8B/><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--code-block-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51)}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style></noscript><link rel=stylesheet href=https://unpkg.com/@fontsource/lxgw-wenkai/index.css><link rel=stylesheet href=https://unpkg.com/@fontsource/fira-code/index.css><style>:root{--custom-sans-font:"LXGW WenKai Bright", "LXGW Bright", "LXGW Bright Medium", "LXGW WenKai", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;--custom-mono-font:"Fira Code", "LXGW WenKai Bright", "LXGW Bright", "LXGW Bright Medium", "LXGW WenKai", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}body,.post-content,.post-title,.post-meta,.toc,.logo,.main,.nav,.entry-content,button,input,textarea,select{font-family:var(--custom-sans-font) !important}code,pre,kbd,samp,.highlight,.highlight *{font-family:var(--custom-mono-font) !important}</style><script>window.MathJax={tex:{inlineMath:[["$","$"],["\\(","\\)"]],displayMath:[["$$","$$"],["\\[","\\]"]],processEscapes:!0,processEnvironments:!0},options:{skipHtmlTags:["script","noscript","style","textarea","pre","code"]}}</script><script>(function(){const e=["https://unpkg.com/mathjax@3/es5/tex-chtml.js"];function t(n){if(n>=e.length){console.error("MathJax load failed on all CDN sources.");return}const s=document.createElement("script");s.id="MathJax-script",s.defer=!0,s.src=e[n],s.onload=function(){window.MathJax&&typeof window.MathJax.typesetPromise=="function"&&window.MathJax.typesetPromise().catch(function(e){console.error("MathJax typeset failed:",e)})},s.onerror=function(){console.warn("MathJax CDN failed, fallback to next source:",e[n]),s.remove(),t(n+1)},document.head.appendChild(s)}t(0)})()</script><script src=//www.busuanzi.cc/static/3.6.9/busuanzi.min.js defer></script><script async src="https://www.googletagmanager.com/gtag/js?id=G-H8HR924TXG"></script><script>var dnt,doNotTrack=!1;if(!1&&(dnt=navigator.doNotTrack||window.doNotTrack||navigator.msDoNotTrack,doNotTrack=dnt=="1"||dnt=="yes"),!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-H8HR924TXG")}</script><meta property="og:url" content="https://qbning.github.io/posts/markdown%E6%A0%B7%E4%BE%8B/"><meta property="og:site_name" content="qbning's site"><meta property="og:title" content="Markdown 样例"><meta property="og:description" content='原文为Markdown Cheatsheet Demo,结合本主题进行了改动。
+基础格式 这是一个普通的段落。这段文字是加粗的。 但这部分不是！斜体字看起来也不错？ 那我们来 组合一下。没错就是这样！也可以高亮代码，比如 MyFunction()。好人总会加上超链接，所以 点这里 或者访问 http://www.example.com。
+标题 H1 到 H6 H1 标题 H2 标题 H3 标题 H4 标题 H5 标题 H6 标题 脚注 有时候你想给一段话加上脚注。这是第一个脚注的例子 [1]。你甚至还可以添加带链接的脚注 [2]！
+引用 前途是光明的，道路是曲折的。
+注意： 本主题不支持嵌套引用块。
+列表 第一个有序列表项 第二个有序列表项 无序列表使用星号 或者减号 或者加号 代码块 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 var 模块模式 = (function() { var sum = 0; return { add: function() { sum += 1; return sum; }, reset: function() { return sum = 0; } }; }()); alert(模块模式.add()); // 弹出: 1 alert(模块模式.add()); // 弹出: 2 alert(模块模式.reset()); // 弹出: 0 1 2 s = "Python 语法高亮" print(s) 没有指定语言，因此不会高亮。 不过我们可以加入一些 <b>HTML标签</b>。 $$ E = mc^2 $$ 隐藏内容 点击展开 答案是 42'><meta property="og:locale" content="zh-cn"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2025-07-15T00:00:00+00:00"><meta property="article:modified_time" content="2025-07-15T00:00:00+00:00"><meta property="article:tag" content="Markdown"><meta property="og:image" content="https://img-blog.csdnimg.cn/img_convert/057d70b7de204382e5524dfbbb2fda18.png"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://img-blog.csdnimg.cn/img_convert/057d70b7de204382e5524dfbbb2fda18.png"><meta name=twitter:title content="Markdown 样例"><meta name=twitter:description content='原文为Markdown Cheatsheet Demo,结合本主题进行了改动。
+基础格式
+这是一个普通的段落。这段文字是加粗的。 但这部分不是！斜体字看起来也不错？ 那我们来 组合一下。没错就是这样！也可以高亮代码，比如 MyFunction()。好人总会加上超链接，所以 点这里 或者访问 http://www.example.com。
+
+标题 H1 到 H6
+H1 标题
+H2 标题
+H3 标题
+H4 标题
+H5 标题
+H6 标题
+
+脚注
+有时候你想给一段话加上脚注。这是第一个脚注的例子 [1]。你甚至还可以添加带链接的脚注 [2]！
+
+引用
+
+前途是光明的，道路是曲折的。
+注意： 本主题不支持嵌套引用块。
+
+列表
+
+第一个有序列表项
+第二个有序列表项
+
+
+无序列表使用星号
+
+
+或者减号
+
+
+或者加号
+
+
+
+
+
+代码块
+
+
+ 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+
+
+var 模块模式 = (function() {
+    var sum = 0;
+
+    return {
+        add: function() {
+            sum += 1;
+            return sum;
+        },
+        reset: function() {
+            return sum = 0;
+        }
+    };
+}());
+
+alert(模块模式.add());    // 弹出: 1
+alert(模块模式.add());    // 弹出: 2
+alert(模块模式.reset());  // 弹出: 0
+
+
+
+
+1
+2
+
+
+s = "Python 语法高亮"
+print(s)
+
+
+没有指定语言，因此不会高亮。
+不过我们可以加入一些 <b>HTML标签</b>。
+$$ E = mc^2 $$
+
+
+
+隐藏内容
+
+
+
+  点击展开
+
+  答案是 42'><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://qbning.github.io/posts/"},{"@type":"ListItem","position":2,"name":"Markdown 样例","item":"https://qbning.github.io/posts/markdown%E6%A0%B7%E4%BE%8B/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Markdown 样例","name":"Markdown 样例","description":"原文为Markdown Cheatsheet Demo,结合本主题进行了改动。\n基础格式 这是一个普通的段落。这段文字是加粗的。 但这部分不是！斜体字看起来也不错？ 那我们来 组合一下。没错就是这样！也可以高亮代码，比如 MyFunction()。好人总会加上超链接，所以 点这里 或者访问 http://www.example.com。\n标题 H1 到 H6 H1 标题 H2 标题 H3 标题 H4 标题 H5 标题 H6 标题 脚注 有时候你想给一段话加上脚注。这是第一个脚注的例子 [1]。你甚至还可以添加带链接的脚注 [2]！\n引用 前途是光明的，道路是曲折的。\n注意： 本主题不支持嵌套引用块。\n列表 第一个有序列表项 第二个有序列表项 无序列表使用星号 或者减号 或者加号 代码块 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 var 模块模式 = (function() { var sum = 0; return { add: function() { sum += 1; return sum; }, reset: function() { return sum = 0; } }; }()); alert(模块模式.add()); // 弹出: 1 alert(模块模式.add()); // 弹出: 2 alert(模块模式.reset()); // 弹出: 0 1 2 s = \u0026#34;Python 语法高亮\u0026#34; print(s) 没有指定语言，因此不会高亮。 不过我们可以加入一些 \u0026lt;b\u0026gt;HTML标签\u0026lt;/b\u0026gt;。 $$ E = mc^2 $$ 隐藏内容 点击展开 答案是 42\n","keywords":["markdown"],"articleBody":"原文为Markdown Cheatsheet Demo,结合本主题进行了改动。\n基础格式 这是一个普通的段落。这段文字是加粗的。 但这部分不是！斜体字看起来也不错？ 那我们来 组合一下。没错就是这样！也可以高亮代码，比如 MyFunction()。好人总会加上超链接，所以 点这里 或者访问 http://www.example.com。\n标题 H1 到 H6 H1 标题 H2 标题 H3 标题 H4 标题 H5 标题 H6 标题 脚注 有时候你想给一段话加上脚注。这是第一个脚注的例子 [1]。你甚至还可以添加带链接的脚注 [2]！\n引用 前途是光明的，道路是曲折的。\n注意： 本主题不支持嵌套引用块。\n列表 第一个有序列表项 第二个有序列表项 无序列表使用星号 或者减号 或者加号 代码块 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 var 模块模式 = (function() { var sum = 0; return { add: function() { sum += 1; return sum; }, reset: function() { return sum = 0; } }; }()); alert(模块模式.add()); // 弹出: 1 alert(模块模式.add()); // 弹出: 2 alert(模块模式.reset()); // 弹出: 0 1 2 s = \"Python 语法高亮\" print(s) 没有指定语言，因此不会高亮。 不过我们可以加入一些 HTML标签。 $$ E = mc^2 $$ 隐藏内容 点击展开 答案是 42\n加粗文本\n$$ a^2 + b^2 = c^2 $$ 1 2 3 4 int main() { return 0; } 标题 $$ a_x^y$$xx\n表格 表格 1：对齐方式 表头一 表头二 表头三 第三列是 右对齐 $1600 第二列是 居中 $12 斑马线效果 很整洁 $1 表格 2：包含格式元素 Markdown 简洁 漂亮 仍然 正常 渲染 1 2 3 分隔线 在 HTML 中 是用来创建段落之间的分隔线。在 Markdown 中，你可以通过以下任意一种方式创建：\n___：三个下划线 ---：三个短横线 ***：三个星号 渲染效果如下：\n多媒体 视频嵌入 \u003c!DOCTYPE HTML\u003e 图片 脚注 1：这是第一个脚注内容！ ↩︎\n2：这是一个有链接的脚注 — 点击跳转! ↩︎\n","wordCount":"190","inLanguage":"en","image":"https://img-blog.csdnimg.cn/img_convert/057d70b7de204382e5524dfbbb2fda18.png","datePublished":"2025-07-15T00:00:00Z","dateModified":"2025-07-15T00:00:00Z","author":{"@type":"Person","name":"qbning"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://qbning.github.io/posts/markdown%E6%A0%B7%E4%BE%8B/"},"publisher":{"@type":"Organization","name":"qbning's site","logo":{"@type":"ImageObject","url":"https://avatars.githubusercontent.com/u/88238811?v=4"}}}</script></head><body id=top><script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add("dark"):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove("dark"):window.matchMedia("(prefers-color-scheme: dark)").matches&&document.body.classList.add("dark")</script><header class=header><nav class=nav><div class=logo><a href=https://qbning.github.io/ accesskey=h title="qbning's site (Alt + H)">qbning's site</a><div class=logo-switches><button id=theme-toggle accesskey=t title="(Alt + T)" aria-label="Toggle theme">
+<svg id="moon" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+<svg id="sun" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div></div><ul id=menu><li><a href=https://qbning.github.io/archives/ title=归档><span>归档</span></a></li><li><a href=https://qbning.github.io/categories/ title=分类><span>分类</span></a></li><li><a href=https://qbning.github.io/tags/ title=标签><span>标签</span></a></li><li><a href=https://qbning.github.io/friends/ title=友链><span>友链</span></a></li><li><a href=https://qbning.github.io/search/ title=搜索><span>搜索</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><div class=breadcrumbs><a href=https://qbning.github.io/>Home</a>&nbsp;»&nbsp;<a href=https://qbning.github.io/posts/>Posts</a></div><h1 class="post-title entry-hint-parent">Markdown 样例</h1><div class=post-meta>发布于:&nbsp;<span title='2025-07-15 00:00:00 +0000 UTC'>2025-07-15</span>&nbsp;·&nbsp;1 分钟&nbsp;·&nbsp;190 字&nbsp;·&nbsp;qbning</div><div style=margin-top:20px;display:flex;align-items:center><b>分类：</b><ul class=post-tags><li><a href=https://qbning.github.io/categories/%E5%8D%9A%E5%AE%A2%E7%9B%B8%E5%85%B3/>博客相关</a></li></ul></div><div style=margin-top:10px;display:flex;align-items:center><b>标签：</b><ul class=post-tags><li><a href=https://qbning.github.io/tags/markdown/>Markdown</a></li></ul></div><br><hr></header><figure class=entry-cover><img loading=eager src=https://img-blog.csdnimg.cn/img_convert/057d70b7de204382e5524dfbbb2fda18.png alt></figure><aside id=toc-container class="toc-container wide"><div class=toc><details open><summary accesskey=c title="(Alt + C)"><span class=details>目录</span></summary><div class=inner><ul><ul><li><a href=#%e5%9f%ba%e7%a1%80%e6%a0%bc%e5%bc%8f aria-label=基础格式>基础格式</a></li><li><a href=#%e6%a0%87%e9%a2%98-h1-%e5%88%b0-h6 aria-label="标题 H1 到 H6">标题 H1 到 H6</a></li></ul><li><a href=#h1-%e6%a0%87%e9%a2%98 aria-label="H1 标题">H1 标题</a><ul><li><a href=#h2-%e6%a0%87%e9%a2%98 aria-label="H2 标题">H2 标题</a><ul><li><a href=#h3-%e6%a0%87%e9%a2%98 aria-label="H3 标题">H3 标题</a><ul><li><a href=#h4-%e6%a0%87%e9%a2%98 aria-label="H4 标题">H4 标题</a><ul><li><a href=#h5-%e6%a0%87%e9%a2%98 aria-label="H5 标题">H5 标题</a><ul><li><a href=#h6-%e6%a0%87%e9%a2%98 aria-label="H6 标题">H6 标题</a></li></ul></li></ul></li></ul></li></ul></li><li><a href=#%e8%84%9a%e6%b3%a8 aria-label=脚注>脚注</a></li><li><a href=#%e5%bc%95%e7%94%a8 aria-label=引用>引用</a></li><li><a href=#%e5%88%97%e8%a1%a8 aria-label=列表>列表</a></li><li><a href=#%e4%bb%a3%e7%a0%81%e5%9d%97 aria-label=代码块>代码块</a></li><li><a href=#%e9%9a%90%e8%97%8f%e5%86%85%e5%ae%b9 aria-label=隐藏内容>隐藏内容</a></li><li><a href=#%e8%a1%a8%e6%a0%bc aria-label=表格>表格</a><ul><li><a href=#%e8%a1%a8%e6%a0%bc-1%e5%af%b9%e9%bd%90%e6%96%b9%e5%bc%8f aria-label="表格 1：对齐方式">表格 1：对齐方式</a></li><li><a href=#%e8%a1%a8%e6%a0%bc-2%e5%8c%85%e5%90%ab%e6%a0%bc%e5%bc%8f%e5%85%83%e7%b4%a0 aria-label="表格 2：包含格式元素">表格 2：包含格式元素</a></li></ul></li><li><a href=#%e5%88%86%e9%9a%94%e7%ba%bf aria-label=分隔线>分隔线</a></li><li><a href=#%e5%a4%9a%e5%aa%92%e4%bd%93 aria-label=多媒体>多媒体</a><ul><li><a href=#%e8%a7%86%e9%a2%91%e5%b5%8c%e5%85%a5 aria-label=视频嵌入>视频嵌入</a></li><li><a href=#%e5%9b%be%e7%89%87 aria-label=图片>图片</a></li><li><a href=#%e8%84%9a%e6%b3%a8-1 aria-label=脚注>脚注</a></li></ul></li></ul></li></ul></div></details></div></aside><script>let activeElement,elements=[];const tocContainer=document.getElementById("toc-container"),tocSummary=tocContainer?tocContainer.querySelector(".toc details summary"):null,tocCollapsedStorageKey="papermod-toc-collapsed";function updateTocHandleWidth(){if(!tocContainer||!tocSummary||!tocContainer.classList.contains("wide"))return;const e=Math.ceil(tocSummary.getBoundingClientRect().width);e>0&&tocContainer.style.setProperty("--toc-handle-width",`${e}px`)}function setTocCollapsed(e,t=!0){if(!tocContainer||!tocSummary)return;tocContainer.classList.toggle("toc-collapsed",e),tocSummary.setAttribute("aria-label",e?"展开目录":"收起目录"),tocSummary.setAttribute("title",e?"展开目录":"收起目录"),tocSummary.setAttribute("aria-expanded",(!e).toString()),t&&localStorage.setItem(tocCollapsedStorageKey,e?"1":"0")}window.addEventListener("DOMContentLoaded",function(){checkTocPosition(),updateTocHandleWidth(),elements=document.querySelectorAll("h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]"),activeElement=elements[0];const t=encodeURI(activeElement.getAttribute("id")).toLowerCase();document.querySelector(`.inner ul li a[href="#${t}"]`).classList.add("active");const n=localStorage.getItem(tocCollapsedStorageKey)==="1";setTocCollapsed(n,!1),tocSummary&&tocSummary.addEventListener("click",function(e){if(!tocContainer.classList.contains("wide"))return;e.preventDefault(),setTocCollapsed(!tocContainer.classList.contains("toc-collapsed"))})},!1),window.addEventListener("resize",function(){checkTocPosition(),updateTocHandleWidth()},!1),window.addEventListener("scroll",()=>{if(!elements||elements.length===0)return;activeElement=Array.from(elements).find(e=>{if(getOffsetTop(e)-window.pageYOffset>0&&getOffsetTop(e)-window.pageYOffset<window.innerHeight/2)return e})||activeElement,elements.forEach(e=>{const t=encodeURI(e.getAttribute("id")).toLowerCase();e===activeElement?document.querySelector(`.inner ul li a[href="#${t}"]`).classList.add("active"):document.querySelector(`.inner ul li a[href="#${t}"]`).classList.remove("active")})},!1);const main=parseInt(getComputedStyle(document.body).getPropertyValue("--article-width"),10),toc=parseInt(getComputedStyle(document.body).getPropertyValue("--toc-width"),10),gap=parseInt(getComputedStyle(document.body).getPropertyValue("--gap"),10);function checkTocPosition(){const e=document.body.scrollWidth;e-main-toc*2-gap*4>0?document.getElementById("toc-container").classList.add("wide"):document.getElementById("toc-container").classList.remove("wide"),updateTocHandleWidth()}function getOffsetTop(e){if(!e.getClientRects().length)return 0;let t=e.getBoundingClientRect(),n=e.ownerDocument.defaultView;return t.top+n.pageYOffset}</script><div class=post-content><p>原文为<a href=https://heiswayi.github.io/thinkspace/2015/markdown-cheatsheet-demo/ target=_blank>Markdown Cheatsheet Demo</a>,结合本主题进行了改动。</p><h2 id=基础格式>基础格式<a hidden class=anchor aria-hidden=true href=#基础格式>#</a></h2><p>这是一个普通的段落。<strong>这段文字是加粗的。</strong> 但这部分不是！<em>斜体字看起来也不错？</em> 那我们来 <strong><em>组合一下</em></strong>。没错就是这样！也可以高亮代码，比如 <code>MyFunction()</code>。好人总会加上超链接，所以 <a href=http://www.example.com target=_blank>点这里</a> 或者访问 <a href=http://www.example.com target=_blank>http://www.example.com</a>。</p><div class=divider></div><h2 id=标题-h1-到-h6>标题 H1 到 H6<a hidden class=anchor aria-hidden=true href=#标题-h1-到-h6>#</a></h2><h1 id=h1-标题>H1 标题<a hidden class=anchor aria-hidden=true href=#h1-标题>#</a></h1><h2 id=h2-标题>H2 标题<a hidden class=anchor aria-hidden=true href=#h2-标题>#</a></h2><h3 id=h3-标题>H3 标题<a hidden class=anchor aria-hidden=true href=#h3-标题>#</a></h3><h4 id=h4-标题>H4 标题<a hidden class=anchor aria-hidden=true href=#h4-标题>#</a></h4><h5 id=h5-标题>H5 标题<a hidden class=anchor aria-hidden=true href=#h5-标题>#</a></h5><h6 id=h6-标题>H6 标题<a hidden class=anchor aria-hidden=true href=#h6-标题>#</a></h6><div class=divider></div><h2 id=脚注>脚注<a hidden class=anchor aria-hidden=true href=#脚注>#</a></h2><p>有时候你想给一段话加上脚注。这是第一个脚注的例子 [<sup id=fnref:1><a href=#fn:1 class=footnote-ref role=doc-noteref>1</a></sup>]。你甚至还可以添加带链接的脚注 [<sup id=fnref:2><a href=#fn:2 class=footnote-ref role=doc-noteref>2</a></sup>]！</p><div class=divider></div><h2 id=引用>引用<a hidden class=anchor aria-hidden=true href=#引用>#</a></h2><blockquote><p>前途是光明的，道路是曲折的。</p></blockquote><p><strong>注意：</strong> 本主题不支持嵌套引用块。</p><div class=divider></div><h2 id=列表>列表<a hidden class=anchor aria-hidden=true href=#列表>#</a></h2><ol><li>第一个有序列表项</li><li>第二个有序列表项</li></ol><ul><li>无序列表使用星号</li></ul><ul><li>或者减号</li></ul><ul><li>或者加号</li></ul><div class=divider></div><h2 id=代码块>代码块<a hidden class=anchor aria-hidden=true href=#代码块>#</a></h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=kd>var</span> <span class=nx>模块模式</span> <span class=o>=</span> <span class=p>(</span><span class=kd>function</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=kd>var</span> <span class=nx>sum</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nx>add</span><span class=o>:</span> <span class=kd>function</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=nx>sum</span> <span class=o>+=</span> <span class=mi>1</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=k>return</span> <span class=nx>sum</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=p>},</span>
+</span></span><span class=line><span class=cl>        <span class=nx>reset</span><span class=o>:</span> <span class=kd>function</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>return</span> <span class=nx>sum</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>};</span>
+</span></span><span class=line><span class=cl><span class=p>}());</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>alert</span><span class=p>(</span><span class=nx>模块模式</span><span class=p>.</span><span class=nx>add</span><span class=p>());</span>    <span class=c1>// 弹出: 1
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nx>alert</span><span class=p>(</span><span class=nx>模块模式</span><span class=p>.</span><span class=nx>add</span><span class=p>());</span>    <span class=c1>// 弹出: 2
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nx>alert</span><span class=p>(</span><span class=nx>模块模式</span><span class=p>.</span><span class=nx>reset</span><span class=p>());</span>  <span class=c1>// 弹出: 0
+</span></span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=n>s</span> <span class=o>=</span> <span class=s2>&#34;Python 语法高亮&#34;</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>s</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><pre tabindex=0><code>没有指定语言，因此不会高亮。
+不过我们可以加入一些 &lt;b&gt;HTML标签&lt;/b&gt;。
+</code></pre>$$ E = mc^2 $$<div class=divider></div><h2 id=隐藏内容>隐藏内容<a hidden class=anchor aria-hidden=true href=#隐藏内容>#</a></h2><p><details><summary markdown=span>点击展开</summary><p>答案是 <code>42</code></p><strong>加粗文本</strong><br></p>$$ a^2 + b^2 = c^2 $$<div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=line><span class=cl><span class=kt>int</span> <span class=nf>main</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div></details><div class=divider></div><p><details><summary markdown=span>标题</summary>$$ a_x^y$$<p><strong>xx</strong></p></details></p><h2 id=表格>表格<a hidden class=anchor aria-hidden=true href=#表格>#</a></h2><h3 id=表格-1对齐方式>表格 1：对齐方式<a hidden class=anchor aria-hidden=true href=#表格-1对齐方式>#</a></h3><table><thead><tr><th>表头一</th><th style=text-align:center>表头二</th><th style=text-align:right>表头三</th></tr></thead><tbody><tr><td>第三列是</td><td style=text-align:center>右对齐</td><td style=text-align:right>$1600</td></tr><tr><td>第二列是</td><td style=text-align:center>居中</td><td style=text-align:right>$12</td></tr><tr><td>斑马线效果</td><td style=text-align:center>很整洁</td><td style=text-align:right>$1</td></tr></tbody></table><h3 id=表格-2包含格式元素>表格 2：包含格式元素<a hidden class=anchor aria-hidden=true href=#表格-2包含格式元素>#</a></h3><table><thead><tr><th>Markdown</th><th>简洁</th><th>漂亮</th></tr></thead><tbody><tr><td><em>仍然</em></td><td><code>正常</code></td><td><strong>渲染</strong></td></tr><tr><td>1</td><td>2</td><td>3</td></tr></tbody></table><div class=divider></div><h2 id=分隔线>分隔线<a hidden class=anchor aria-hidden=true href=#分隔线>#</a></h2><p>在 HTML 中 <code>&lt;hr></code> 是用来创建段落之间的分隔线。在 Markdown 中，你可以通过以下任意一种方式创建：</p><ul><li><code>___</code>：三个下划线</li><li><code>---</code>：三个短横线</li><li><code>***</code>：三个星号</li></ul><p>渲染效果如下：</p><hr><hr><hr><div class=divider></div><h2 id=多媒体>多媒体<a hidden class=anchor aria-hidden=true href=#多媒体>#</a></h2><h3 id=视频嵌入>视频嵌入<a hidden class=anchor aria-hidden=true href=#视频嵌入>#</a></h3><div class=video-container><iframe src="https://player.bilibili.com/player.html?isOutside=true&bvid=BV1x5411o7Kn&cid=505002580&as_wide=1&high_quality=1&danmaku=0&control=1" allowfullscreen scrolling=no frameborder=0 sandbox="allow-top-navigation allow-same-origin allow-forms allow-scripts"></iframe></div><!doctype html><html lang=en><head><style type=text/css>.bilibili_shortcodes{position:relative;width:100%;height:0;padding-bottom:66%;margin:auto;overflow:hidden;text-align:center}.bilibili_shortcodes iframe{position:absolute;width:100%;height:100%;left:0;top:0}</style><title></title></head><body><div class=bilibili_shortcodes><iframe src="https://player.bilibili.com/player.html?bvid=BV1x5411o7Kn&page=1&high_quality=1&danmaku=0&as_wide=0" scrolling=no border=0 frameborder=no framespacing=0 allowfullscreen></iframe></div></body></html><h3 id=图片>图片<a hidden class=anchor aria-hidden=true href=#图片>#</a></h3><p><img alt=Minion loading=lazy src="https://avatars.githubusercontent.com/u/88238811?v=4"></p><hr><h3 id=脚注-1>脚注<a hidden class=anchor aria-hidden=true href=#脚注-1>#</a></h3><div class=footnotes role=doc-endnotes><hr><ol><li id=fn:1><p>1：这是第一个脚注内容！&#160;<a href=#fnref:1 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:2><p>2：这是一个有链接的脚注 — <a href=# target=_blank>点击跳转!</a>&#160;<a href=#fnref:2 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li></ol></div></div><footer class=post-footer><nav class=paginav><a class=prev href=https://qbning.github.io/posts/godot%E5%AE%9E%E7%8E%B0camera2d%E7%9A%84%E7%A7%BB%E5%8A%A8%E6%94%BE%E7%BC%A9/><span class=title>« Prev</span><br><span>Godot实现Camera2D的移动放缩</span></a></nav></footer><div id=giscus-container></div><script>var theme="light_tritanopia";const currentTheme=localStorage.getItem("pref-theme")||(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.body.classList.toggle("dark",currentTheme==="dark"),theme=currentTheme==="dark"?"dark_dimmed":"light_tritanopia";const script=document.createElement("script");script.src="https://giscus.app/client.js ",script.async=!0,script.crossOrigin="anonymous",script.setAttribute("data-repo","qbning/discussion"),script.setAttribute("data-repo-id","R_kgDOPMq-bw"),script.setAttribute("data-category","Announcements"),script.setAttribute("data-category-id","DIC_kwDOPMq-b84Cs95G"),script.setAttribute("data-mapping","url"),script.setAttribute("data-strict","0"),script.setAttribute("data-reactions-enabled","1"),script.setAttribute("data-emit-metadata","0"),script.setAttribute("data-input-position","top"),script.setAttribute("data-theme",theme),script.setAttribute("data-lang","zh-CN"),script.setAttribute("data-loading","lazy"),document.getElementById("giscus-container").appendChild(script)</script></article></main><center>本站总访客数 <span id=busuanzi_site_uv>加载中...</span> 人</center><footer class=footer><span>&copy; 2026 <a href=https://qbning.github.io/>qbning's site</a></span> ·
+<span>Powered by
+<a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a> &
+<a href=https://github.com/adityatelange/hugo-PaperMod/ rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top aria-label="go to top" title="Go to Top (Alt + G)" class=top-link id=top-link accesskey=g><svg viewBox="0 0 12 6" fill="currentColor"><path d="M12 6H0l6-6z"/></svg>
+</a><script>let menu=document.getElementById("menu");menu&&(menu.scrollLeft=localStorage.getItem("menu-scroll-position"),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}),document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script><script>function setGiscusTheme(e){const t=document.querySelector("iframe.giscus-frame");if(!t||!t.contentWindow)return;const n={setConfig:{theme:e}};t.contentWindow.postMessage({giscus:n},"https://giscus.app")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove("dark"),localStorage.setItem("pref-theme","light"),setGiscusTheme("light_tritanopia")):(document.body.classList.add("dark"),localStorage.setItem("pref-theme","dark"),setGiscusTheme("dark_dimmed"))})</script><script>document.querySelectorAll("pre > code").forEach(e=>{const n=e.parentNode.parentNode,t=document.createElement("button");t.classList.add("copy-code"),t.innerHTML="copy";function s(){t.innerHTML="copied!",setTimeout(()=>{t.innerHTML="copy"},2e3)}t.addEventListener("click",t=>{if("clipboard"in navigator){navigator.clipboard.writeText(e.textContent),s();return}const n=document.createRange();n.selectNodeContents(e);const o=window.getSelection();o.removeAllRanges(),o.addRange(n);try{document.execCommand("copy"),s()}catch{}o.removeRange(n)}),n.classList.contains("highlight")?n.appendChild(t):n.parentNode.firstChild==n||(e.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?e.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(t):e.parentNode.appendChild(t))})</script></body></html>

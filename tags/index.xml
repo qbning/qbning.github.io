@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>标签 on qbning&#39;s site</title>
+    <link>https://qbning.github.io/tags/</link>
+    <description>Recent content in 标签 on qbning&#39;s site</description>
+    <image>
+      <title>qbning&#39;s site</title>
+      <url>https://avatars.githubusercontent.com/u/88238811?v=4</url>
+      <link>https://avatars.githubusercontent.com/u/88238811?v=4</link>
+    </image>
+    <generator>Hugo -- 0.148.1</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sat, 14 Mar 2026 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://qbning.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>动量法</title>
+      <link>https://qbning.github.io/tags/%E5%8A%A8%E9%87%8F%E6%B3%95/</link>
+      <pubDate>Mon, 09 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://qbning.github.io/tags/%E5%8A%A8%E9%87%8F%E6%B3%95/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>梯度下降</title>
+      <link>https://qbning.github.io/tags/%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D/</link>
+      <pubDate>Mon, 09 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://qbning.github.io/tags/%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Unity</title>
+      <link>https://qbning.github.io/tags/unity/</link>
+      <pubDate>Sat, 06 Sep 2025 00:00:00 +0000</pubDate>
+      <guid>https://qbning.github.io/tags/unity/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>解包</title>
+      <link>https://qbning.github.io/tags/%E8%A7%A3%E5%8C%85/</link>
+      <pubDate>Sat, 06 Sep 2025 00:00:00 +0000</pubDate>
+      <guid>https://qbning.github.io/tags/%E8%A7%A3%E5%8C%85/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Godot</title>
+      <link>https://qbning.github.io/tags/godot/</link>
+      <pubDate>Tue, 26 Aug 2025 00:00:00 +0000</pubDate>
+      <guid>https://qbning.github.io/tags/godot/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>TileMapLayer</title>
+      <link>https://qbning.github.io/tags/tilemaplayer/</link>
+      <pubDate>Tue, 26 Aug 2025 00:00:00 +0000</pubDate>
+      <guid>https://qbning.github.io/tags/tilemaplayer/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Camera2D</title>
+      <link>https://qbning.github.io/tags/camera2d/</link>
+      <pubDate>Wed, 16 Jul 2025 00:00:00 +0000</pubDate>
+      <guid>https://qbning.github.io/tags/camera2d/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Markdown</title>
+      <link>https://qbning.github.io/tags/markdown/</link>
+      <pubDate>Tue, 15 Jul 2025 00:00:00 +0000</pubDate>
+      <guid>https://qbning.github.io/tags/markdown/</guid>
+      <description></description>
+    </item>
+  </channel>
+</rss>

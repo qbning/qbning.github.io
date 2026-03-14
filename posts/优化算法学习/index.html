@@ -1,0 +1,1100 @@
+<!doctype html><html lang=en dir=auto><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>优化算法学习 | qbning's site</title><meta name=keywords content="梯度下降,动量法"><meta name=description content="参考 动手学深度学习-11.优化算法
+AI辅助创作，部分内容因个人时间精力进行了取舍
+梯度下降
+利用泰勒展开，\(f(x+\epsilon) = f(x) + \epsilon f'(x)+O(\epsilon ^ 2)\)，由于我们的目的是求得另一个\(x_1\)，使得\(f(x_1) \lt f(x)\)，其中\(x_1=x+\epsilon\)
+换言之就是让$\epsilon f'(x)<0$
+固定步长为\(\eta>0\),取\(\epsilon=-\eta f'(x)\),代入可得\(\epsilon f'(x) = -\eta f'(x)^2 <0\)
+
+
+1
+2
+3
+4
+
+
+%matplotlib inline
+import numpy as np
+import torch
+from d2l import torch as d2l
+
+
+定义目标函数为\(f(x)=x^2\),目标函数导数为\(2x\)
+
+
+1
+2
+3
+4
+
+
+def f(x):
+    return x ** 2
+def f_grad(x):
+    return 2 * x
+
+
+使用\(x=10\)作为初始值，设\(\eta=0.2\)，使用梯度下降法迭代\(10\)次
+
+
+ 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+
+
+import matplotlib.pyplot as plt
+
+def gd(eta,f_grad):
+    x = 10
+    results = [x]
+    for i in range(10):
+        x -= eta * f_grad(x)
+        results.append(float(x))
+    print(f'epoch 10,x:{x:f}')
+    return results
+
+_trace_history = []
+
+def show_trace(results, f, title=None, max_cols=3, reset=False, show=True):
+    global _trace_history
+    if reset:
+        _trace_history = []
+
+    _trace_history.append((results, f, title))
+
+    if not show:
+        return
+
+    n = len(_trace_history)
+    cols = min(max_cols, n)
+    traces = _trace_history[-cols:]
+
+    fig, axes = plt.subplots(1, cols, figsize=(4.8 * cols, 3.6))
+    if cols == 1:
+        axes = [axes]
+
+    for i, (ax, (res, func, t)) in enumerate(zip(axes, traces), start=n - cols + 1):
+        bound = max(abs(min(res)), abs(max(res)))
+        f_line = torch.arange(-bound, bound, 0.01)
+        x_line = f_line.numpy()
+        y_line = [float(func(x)) for x in f_line]
+        x_res = [float(x) for x in res]
+        y_res = [float(func(x)) for x in res]
+
+        ax.plot(x_line, y_line, '-')
+        ax.plot(x_res, y_res, '-o')
+        ax.set_xlabel('x')
+        ax.set_ylabel('f(x)')
+        ax.set_title(t if t is not None else f'第{i}次轨迹')
+        ax.grid(alpha=0.3)
+
+    plt.tight_layout()
+    plt.show()
+
+results = gd(0.2,f_grad)
+show_trace(results, f, title='eta=0.2', reset=True)
+
+
+epoch 10,x:7.295479
+
+
+  "><meta name=author content="qbning"><link rel=canonical href=https://qbning.github.io/posts/%E4%BC%98%E5%8C%96%E7%AE%97%E6%B3%95%E5%AD%A6%E4%B9%A0/><link crossorigin=anonymous href=/assets/css/stylesheet.css rel="preload stylesheet" as=style><link rel=icon href="https://avatars.githubusercontent.com/u/88238811?v=4"><link rel=icon type=image/png sizes=16x16 href="https://avatars.githubusercontent.com/u/88238811?v=4"><link rel=icon type=image/png sizes=32x32 href="https://avatars.githubusercontent.com/u/88238811?v=4"><link rel=apple-touch-icon href="https://avatars.githubusercontent.com/u/88238811?v=4"><link rel=mask-icon href=https://qbning.github.io/safari-pinned-tab.svg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><link rel=alternate hreflang=en href=https://qbning.github.io/posts/%E4%BC%98%E5%8C%96%E7%AE%97%E6%B3%95%E5%AD%A6%E4%B9%A0/><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--code-block-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51)}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style></noscript><link rel=stylesheet href=https://unpkg.com/@fontsource/lxgw-wenkai/index.css><link rel=stylesheet href=https://unpkg.com/@fontsource/fira-code/index.css><style>:root{--custom-sans-font:"LXGW WenKai Bright", "LXGW Bright", "LXGW Bright Medium", "LXGW WenKai", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;--custom-mono-font:"Fira Code", "LXGW WenKai Bright", "LXGW Bright", "LXGW Bright Medium", "LXGW WenKai", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}body,.post-content,.post-title,.post-meta,.toc,.logo,.main,.nav,.entry-content,button,input,textarea,select{font-family:var(--custom-sans-font) !important}code,pre,kbd,samp,.highlight,.highlight *{font-family:var(--custom-mono-font) !important}</style><script>window.MathJax={tex:{inlineMath:[["$","$"],["\\(","\\)"]],displayMath:[["$$","$$"],["\\[","\\]"]],processEscapes:!0,processEnvironments:!0},options:{skipHtmlTags:["script","noscript","style","textarea","pre","code"]}}</script><script>(function(){const e=["https://unpkg.com/mathjax@3/es5/tex-chtml.js"];function t(n){if(n>=e.length){console.error("MathJax load failed on all CDN sources.");return}const s=document.createElement("script");s.id="MathJax-script",s.defer=!0,s.src=e[n],s.onload=function(){window.MathJax&&typeof window.MathJax.typesetPromise=="function"&&window.MathJax.typesetPromise().catch(function(e){console.error("MathJax typeset failed:",e)})},s.onerror=function(){console.warn("MathJax CDN failed, fallback to next source:",e[n]),s.remove(),t(n+1)},document.head.appendChild(s)}t(0)})()</script><script src=//www.busuanzi.cc/static/3.6.9/busuanzi.min.js defer></script><script async src="https://www.googletagmanager.com/gtag/js?id=G-H8HR924TXG"></script><script>var dnt,doNotTrack=!1;if(!1&&(dnt=navigator.doNotTrack||window.doNotTrack||navigator.msDoNotTrack,doNotTrack=dnt=="1"||dnt=="yes"),!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-H8HR924TXG")}</script><meta property="og:url" content="https://qbning.github.io/posts/%E4%BC%98%E5%8C%96%E7%AE%97%E6%B3%95%E5%AD%A6%E4%B9%A0/"><meta property="og:site_name" content="qbning's site"><meta property="og:title" content="优化算法学习"><meta property="og:description" content="参考 动手学深度学习-11.优化算法
+AI辅助创作，部分内容因个人时间精力进行了取舍
+梯度下降 利用泰勒展开，\(f(x+\epsilon) = f(x) + \epsilon f'(x)+O(\epsilon ^ 2)\)，由于我们的目的是求得另一个\(x_1\)，使得\(f(x_1) \lt f(x)\)，其中\(x_1=x+\epsilon\)
+换言之就是让$\epsilon f'(x)<0$
+固定步长为\(\eta>0\),取\(\epsilon=-\eta f'(x)\),代入可得\(\epsilon f'(x) = -\eta f'(x)^2 <0\)
+1 2 3 4 %matplotlib inline import numpy as np import torch from d2l import torch as d2l 定义目标函数为\(f(x)=x^2\),目标函数导数为\(2x\)
+1 2 3 4 def f(x): return x ** 2 def f_grad(x): return 2 * x 使用\(x=10\)作为初始值，设\(\eta=0.2\)，使用梯度下降法迭代\(10\)次
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 import matplotlib.pyplot as plt def gd(eta,f_grad): x = 10 results = [x] for i in range(10): x -= eta * f_grad(x) results.append(float(x)) print(f'epoch 10,x:{x:f}') return results _trace_history = [] def show_trace(results, f, title=None, max_cols=3, reset=False, show=True): global _trace_history if reset: _trace_history = [] _trace_history.append((results, f, title)) if not show: return n = len(_trace_history) cols = min(max_cols, n) traces = _trace_history[-cols:] fig, axes = plt.subplots(1, cols, figsize=(4.8 * cols, 3.6)) if cols == 1: axes = [axes] for i, (ax, (res, func, t)) in enumerate(zip(axes, traces), start=n - cols + 1): bound = max(abs(min(res)), abs(max(res))) f_line = torch.arange(-bound, bound, 0.01) x_line = f_line.numpy() y_line = [float(func(x)) for x in f_line] x_res = [float(x) for x in res] y_res = [float(func(x)) for x in res] ax.plot(x_line, y_line, '-') ax.plot(x_res, y_res, '-o') ax.set_xlabel('x') ax.set_ylabel('f(x)') ax.set_title(t if t is not None else f'第{i}次轨迹') ax.grid(alpha=0.3) plt.tight_layout() plt.show() results = gd(0.2,f_grad) show_trace(results, f, title='eta=0.2', reset=True) epoch 10,x:7.295479 "><meta property="og:locale" content="zh-cn"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2026-03-09T00:00:00+00:00"><meta property="article:modified_time" content="2026-03-14T00:00:00+00:00"><meta property="article:tag" content="梯度下降"><meta property="article:tag" content="动量法"><meta property="og:image" content="https://avatars.githubusercontent.com/u/88238811?v=4"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://avatars.githubusercontent.com/u/88238811?v=4"><meta name=twitter:title content="优化算法学习"><meta name=twitter:description content="参考 动手学深度学习-11.优化算法
+AI辅助创作，部分内容因个人时间精力进行了取舍
+梯度下降
+利用泰勒展开，\(f(x+\epsilon) = f(x) + \epsilon f'(x)+O(\epsilon ^ 2)\)，由于我们的目的是求得另一个\(x_1\)，使得\(f(x_1) \lt f(x)\)，其中\(x_1=x+\epsilon\)
+换言之就是让$\epsilon f'(x)<0$
+固定步长为\(\eta>0\),取\(\epsilon=-\eta f'(x)\),代入可得\(\epsilon f'(x) = -\eta f'(x)^2 <0\)
+
+
+1
+2
+3
+4
+
+
+%matplotlib inline
+import numpy as np
+import torch
+from d2l import torch as d2l
+
+
+定义目标函数为\(f(x)=x^2\),目标函数导数为\(2x\)
+
+
+1
+2
+3
+4
+
+
+def f(x):
+    return x ** 2
+def f_grad(x):
+    return 2 * x
+
+
+使用\(x=10\)作为初始值，设\(\eta=0.2\)，使用梯度下降法迭代\(10\)次
+
+
+ 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+
+
+import matplotlib.pyplot as plt
+
+def gd(eta,f_grad):
+    x = 10
+    results = [x]
+    for i in range(10):
+        x -= eta * f_grad(x)
+        results.append(float(x))
+    print(f'epoch 10,x:{x:f}')
+    return results
+
+_trace_history = []
+
+def show_trace(results, f, title=None, max_cols=3, reset=False, show=True):
+    global _trace_history
+    if reset:
+        _trace_history = []
+
+    _trace_history.append((results, f, title))
+
+    if not show:
+        return
+
+    n = len(_trace_history)
+    cols = min(max_cols, n)
+    traces = _trace_history[-cols:]
+
+    fig, axes = plt.subplots(1, cols, figsize=(4.8 * cols, 3.6))
+    if cols == 1:
+        axes = [axes]
+
+    for i, (ax, (res, func, t)) in enumerate(zip(axes, traces), start=n - cols + 1):
+        bound = max(abs(min(res)), abs(max(res)))
+        f_line = torch.arange(-bound, bound, 0.01)
+        x_line = f_line.numpy()
+        y_line = [float(func(x)) for x in f_line]
+        x_res = [float(x) for x in res]
+        y_res = [float(func(x)) for x in res]
+
+        ax.plot(x_line, y_line, '-')
+        ax.plot(x_res, y_res, '-o')
+        ax.set_xlabel('x')
+        ax.set_ylabel('f(x)')
+        ax.set_title(t if t is not None else f'第{i}次轨迹')
+        ax.grid(alpha=0.3)
+
+    plt.tight_layout()
+    plt.show()
+
+results = gd(0.2,f_grad)
+show_trace(results, f, title='eta=0.2', reset=True)
+
+
+epoch 10,x:7.295479
+
+
+  "><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://qbning.github.io/posts/"},{"@type":"ListItem","position":2,"name":"优化算法学习","item":"https://qbning.github.io/posts/%E4%BC%98%E5%8C%96%E7%AE%97%E6%B3%95%E5%AD%A6%E4%B9%A0/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"优化算法学习","name":"优化算法学习","description":"参考 动手学深度学习-11.优化算法\nAI辅助创作，部分内容因个人时间精力进行了取舍\n梯度下降 利用泰勒展开，\\(f(x+\\epsilon) = f(x) + \\epsilon f'(x)+O(\\epsilon ^ 2)\\)，由于我们的目的是求得另一个\\(x_1\\)，使得\\(f(x_1) \\lt f(x)\\)，其中\\(x_1=x+\\epsilon\\)\n换言之就是让$\\epsilon f'(x)\u003c0$\n固定步长为\\(\\eta\u003e0\\),取\\(\\epsilon=-\\eta f'(x)\\),代入可得\\(\\epsilon f'(x) = -\\eta f'(x)^2 \u003c0\\)\n1 2 3 4 %matplotlib inline import numpy as np import torch from d2l import torch as d2l 定义目标函数为\\(f(x)=x^2\\),目标函数导数为\\(2x\\)\n1 2 3 4 def f(x): return x ** 2 def f_grad(x): return 2 * x 使用\\(x=10\\)作为初始值，设\\(\\eta=0.2\\)，使用梯度下降法迭代\\(10\\)次\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 import matplotlib.pyplot as plt def gd(eta,f_grad): x = 10 results = [x] for i in range(10): x -= eta * f_grad(x) results.append(float(x)) print(f\u0026#39;epoch 10,x:{x:f}\u0026#39;) return results _trace_history = [] def show_trace(results, f, title=None, max_cols=3, reset=False, show=True): global _trace_history if reset: _trace_history = [] _trace_history.append((results, f, title)) if not show: return n = len(_trace_history) cols = min(max_cols, n) traces = _trace_history[-cols:] fig, axes = plt.subplots(1, cols, figsize=(4.8 * cols, 3.6)) if cols == 1: axes = [axes] for i, (ax, (res, func, t)) in enumerate(zip(axes, traces), start=n - cols + 1): bound = max(abs(min(res)), abs(max(res))) f_line = torch.arange(-bound, bound, 0.01) x_line = f_line.numpy() y_line = [float(func(x)) for x in f_line] x_res = [float(x) for x in res] y_res = [float(func(x)) for x in res] ax.plot(x_line, y_line, \u0026#39;-\u0026#39;) ax.plot(x_res, y_res, \u0026#39;-o\u0026#39;) ax.set_xlabel(\u0026#39;x\u0026#39;) ax.set_ylabel(\u0026#39;f(x)\u0026#39;) ax.set_title(t if t is not None else f\u0026#39;第{i}次轨迹\u0026#39;) ax.grid(alpha=0.3) plt.tight_layout() plt.show() results = gd(0.2,f_grad) show_trace(results, f, title=\u0026#39;eta=0.2\u0026#39;, reset=True) epoch 10,x:7.295479 ","keywords":["梯度下降","动量法"],"articleBody":"参考 动手学深度学习-11.优化算法\nAI辅助创作，部分内容因个人时间精力进行了取舍\n梯度下降 利用泰勒展开，\\(f(x+\\epsilon) = f(x) + \\epsilon f'(x)+O(\\epsilon ^ 2)\\)，由于我们的目的是求得另一个\\(x_1\\)，使得\\(f(x_1) \\lt f(x)\\)，其中\\(x_1=x+\\epsilon\\)\n换言之就是让$\\epsilon f'(x)\u003c0$\n固定步长为\\(\\eta\u003e0\\),取\\(\\epsilon=-\\eta f'(x)\\),代入可得\\(\\epsilon f'(x) = -\\eta f'(x)^2 \u003c0\\)\n1 2 3 4 %matplotlib inline import numpy as np import torch from d2l import torch as d2l 定义目标函数为\\(f(x)=x^2\\),目标函数导数为\\(2x\\)\n1 2 3 4 def f(x): return x ** 2 def f_grad(x): return 2 * x 使用\\(x=10\\)作为初始值，设\\(\\eta=0.2\\)，使用梯度下降法迭代\\(10\\)次\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 import matplotlib.pyplot as plt def gd(eta,f_grad): x = 10 results = [x] for i in range(10): x -= eta * f_grad(x) results.append(float(x)) print(f'epoch 10,x:{x:f}') return results _trace_history = [] def show_trace(results, f, title=None, max_cols=3, reset=False, show=True): global _trace_history if reset: _trace_history = [] _trace_history.append((results, f, title)) if not show: return n = len(_trace_history) cols = min(max_cols, n) traces = _trace_history[-cols:] fig, axes = plt.subplots(1, cols, figsize=(4.8 * cols, 3.6)) if cols == 1: axes = [axes] for i, (ax, (res, func, t)) in enumerate(zip(axes, traces), start=n - cols + 1): bound = max(abs(min(res)), abs(max(res))) f_line = torch.arange(-bound, bound, 0.01) x_line = f_line.numpy() y_line = [float(func(x)) for x in f_line] x_res = [float(x) for x in res] y_res = [float(func(x)) for x in res] ax.plot(x_line, y_line, '-') ax.plot(x_res, y_res, '-o') ax.set_xlabel('x') ax.set_ylabel('f(x)') ax.set_title(t if t is not None else f'第{i}次轨迹') ax.grid(alpha=0.3) plt.tight_layout() plt.show() results = gd(0.2,f_grad) show_trace(results, f, title='eta=0.2', reset=True) epoch 10,x:7.295479 学习率决定目标函数能否收敛到最小值，以及决定收敛速度，学习率过低可能收敛过慢\n1 show_trace(gd(0.05,f_grad), f, title='eta=0.05') epoch 10,x:3.486784 学习率过高可能导致高阶项无法忽视导致发散\n1 show_trace(gd(1.2,f_grad), f, title='eta=1.2') epoch 10,x:289.254655 在非凸函数中，梯度下降并不保证找到全局最小值，它通常会收敛到“离初始点最近”的那个局部最小值或者鞍点\n1 2 3 4 5 6 7 8 9 c = torch.tensor(0.15 * np.pi) def f(x): return x * torch.cos(c * x) def f_grad(x): return torch.cos(c * x) - c * x * torch.sin(c * x) show_trace(gd(2,f_grad), f, title='non-convex eta=2', reset=True, show=False) show_trace(gd(0.2,f_grad), f, title='non-convex eta=0.2') epoch 10,x:-1.528166 epoch 10,x:7.295479 多元梯度下降 \\(\\pmb{x}\\leftarrow \\pmb{x}-\\eta\\nabla f(\\pmb{x})\\)\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 def train_2d(trainer,steps=20,f_grad=None): x1,x2,s1,s2 = -5,-2,0,0 results = [(x1,x2)] for i in range(steps): if f_grad: x1,x2,s1,s2 = trainer(x1,x2,s1,s2,f_grad) else: x1,x2,s1,s2 = trainer(x1,x2,s1,s2) results.append((x1,x2)) print(f'epoch{i+1}, x1:{float(x1):f}, x2:{float(x2):f}') return results _trace2d_pending = [] def _to_float_scalar(v): if isinstance(v, np.ndarray): if v.size != 1: raise ValueError(f'期望标量或长度为1的数组，实际 shape={v.shape}') return float(v.reshape(-1)[0]) if torch.is_tensor(v): if v.numel() != 1: raise ValueError(f'期望标量或长度为1的张量，实际 shape={tuple(v.shape)}') return float(v.detach().cpu().reshape(-1)[0]) return float(v) def _eval_surface(func, X1, X2): try: Z = func(X1, X2) if torch.is_tensor(Z): Z = Z.detach().cpu().numpy() return np.asarray(Z, dtype=float) except Exception: # 兼容仅支持 torch.Tensor 输入的目标函数 X1_t = torch.as_tensor(X1, dtype=torch.float32) X2_t = torch.as_tensor(X2, dtype=torch.float32) Z = func(X1_t, X2_t) if torch.is_tensor(Z): Z = Z.detach().cpu().numpy() return np.asarray(Z, dtype=float) def show_trace_2d(f, results, title='2D optimization trace', show=True, **kwargs): global _trace2d_pending if 'show_trace' in kwargs: show = kwargs.pop('show_trace') _trace2d_pending.append((f, results, title)) # 延迟显示：先缓存，等下一次 show=True 再统一画图 if not show: return traces = _trace2d_pending n = len(traces) fig, axes = plt.subplots(1, n, figsize=(6 * n, 5)) if n == 1: axes = [axes] for ax, (func, res, t) in zip(axes, traces): x1_vals_raw, x2_vals_raw = zip(*res) x1_vals = np.array([_to_float_scalar(x) for x in x1_vals_raw], dtype=float) x2_vals = np.array([_to_float_scalar(x) for x in x2_vals_raw], dtype=float) x1_min, x1_max = x1_vals.min(), x1_vals.max() x2_min, x2_max = x2_vals.min(), x2_vals.max() pad1 = max(1.0, (x1_max - x1_min) * 0.2) pad2 = max(1.0, (x2_max - x2_min) * 0.2) x1_grid = np.linspace(x1_min - pad1, x1_max + pad1, 200) x2_grid = np.linspace(x2_min - pad2, x2_max + pad2, 200) X1, X2 = np.meshgrid(x1_grid, x2_grid) Z = _eval_surface(func, X1, X2) contours = ax.contour(X1, X2, Z, levels=20, cmap='viridis') ax.clabel(contours, inline=True, fontsize=8) ax.plot(x1_vals, x2_vals, '-o', color='tab:red', linewidth=2, markersize=4, label='trajectory') ax.scatter([x1_vals[0]], [x2_vals[0]], color='tab:blue', s=60, label='start') ax.scatter([x1_vals[-1]], [x2_vals[-1]], color='tab:green', s=60, label='end') ax.set_xlabel('x1') ax.set_ylabel('x2') ax.set_title(t) ax.legend() ax.grid(alpha=0.3) plt.tight_layout() plt.show() _trace2d_pending = [] 1 2 3 4 5 6 7 8 9 10 11 12 13 def f_2d(x1, x2): return x1**2 + 2 * x2**2 def gd_2d(x1, x2, s1, s2, f_grad): eta = 0.1 g1, g2 = f_grad(x1, x2) return x1 - eta * g1, x2 - eta * g2, 0, 0 def f_2d_grad(x1, x2): return 2 * x1, 4 * x2 res_2d = train_2d(gd_2d, steps=20, f_grad=f_2d_grad) show_trace_2d(f_2d, res_2d, title='GD on f(x1,x2)=x1^2+2x2^2') epoch20, x1:-0.057646, x2:-0.000073 学习率的选取决定学习的效果，一些自适应方法可能不能直接用于深度学习\n随机梯度下降 普通的梯度下降的损失函数是所有样本的和 $$L(\\theta) = \\sum_{i=1}^{N} L_i(\\theta)$$ 每次参数更新都需要重新计算\\(N\\)个样本梯度值和 $$\\theta = \\theta - \\eta \\cdot \\nabla \\left( \\sum_{i=1}^{N} L_i(\\theta) \\right) = \\theta - \\eta \\cdot \\sum_{i=1}^{N} \\nabla L_i(\\theta)$$ 当\\(N\\)的规模过大时，普通梯度下降的时空复杂度可能难以接受\n既然计算所有\\(N\\)个样本太慢，那每次更新时，只随机抽取一小部分样本（甚至只有一个样本）来计算损失函数和估算梯度，会发生什么？\n假设我们在每次迭代 \\(t\\) 时，从全部数据中随机均匀采样一个大小为 \\(|B|\\) 的子集 \\(B_t\\)（其中 \\(B_t \\subset \\{1, ..., N\\}\\)）。我们用这个子集的平均梯度来近似整体梯度：\n$$\\nabla L(\\theta) \\approx \\frac{1}{|B|} \\sum_{i \\in B_t} \\nabla L_i(\\theta)$$此时，参数更新公式变为：\n$$\\theta = \\theta - \\eta \\cdot \\frac{1}{|B|} \\sum_{i \\in B_t} \\nabla L_i(\\theta)$$特别地，当 \\(|B|=1\\) 时，即每次只随机选一个样本 \\(i\\)，这就是最原始的随机梯度下降（SGD）：\n$$\\theta = \\theta - \\eta \\cdot \\nabla L_i(\\theta)$$那用部分估计整体靠谱吗？ $$E\\left[ \\frac{1}{|B|} \\sum_{i \\in B_t} \\nabla L_i(\\theta) \\right] =\\frac{1}{|B|} \\sum_{i \\in B_t}E\\left[ \\nabla L_i(\\theta) \\right] = \\frac{1}{N} \\sum_{i=1}^{N} E\\left[ \\nabla L_i(\\theta) \\right]= \\frac{1}{N} \\sum_{i=1}^{N} \\nabla L_i(\\theta) = \\nabla L(\\theta)$$ 所以说随机梯度是对完整梯度的无偏估计\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 def sgd(x1,x2,s1,s2,f_grad): g1,g2 = f_grad(x1,x2) # 增加随机噪声，实际中只用部分样本计算的梯度自带噪声 g1 += torch.normal(0.0,1,(1,)) g2 += torch.normal(0.0,1,(1,)) eta_t = eta *lr() return (x1-eta_t*g1,x2-eta_t*g2,0,0) def constant_lr(): return 1 eta = 0.1 lr = constant_lr res_2d = train_2d(sgd, steps=50, f_grad=f_2d_grad) show_trace_2d(f_2d, res_2d, title='GD on f(x1,x2)=x1^2+2x2^2') epoch50, x1:-0.401927, x2:-0.046643 尽管迭代了\\(50\\)次，效果看起来不如普通的梯度下降，那么剩下能改变的就是学习率了，固定的学习率无法兼具“启动快（此处不是鸡煲笑话），收敛稳”的效果。\n为了解决这个矛盾，我们将学习率从常数 \\(\\eta\\) 变为关于迭代步数 \\(t\\) 的函数 \\(\\eta_t\\)。 SGD 的更新公式演变为：\n$$\\theta_{t+1} = \\theta_t - \\eta_t \\cdot \\nabla L_i(\\theta_t)$$在实际应用中，我们通常使用以下几种调度方式：\n策略 公式示例 特点 指数衰减 \\(\\eta_t = \\eta_0 \\cdot \\gamma^t\\) 学习率随步数指数级下降，衰减速度快 分段常数 每 30 轮 \\(\\eta\\) 除以 10 实现简单，便于手动控制关键阶段的精度 多项式衰减 \\(\\eta_t = \\eta_0 \\cdot (1 - \\frac{t}{T})^k\\) 随训练进度平滑下降，常用于深度学习 1 2 3 4 5 6 7 8 9 10 import math def exponential_lr(): global t t += 1 return math.exp(-0.1 * t) t = 1 lr = exponential_lr res_2d = train_2d(sgd, steps=50, f_grad=f_2d_grad) show_trace_2d(f_2d, res_2d, title='GD on f(x1,x2)=x1^2+2x2^2') epoch50, x1:-0.788887, x2:0.064546 1 2 3 4 5 6 7 8 9 def polynomial_lr(): global t t += 1 return (1 + 0.1 * t) ** (-0.5) t = 1 lr = polynomial_lr res_2d = train_2d(sgd, steps=50, f_grad=f_2d_grad) show_trace_2d(f_2d, res_2d, title='GD on f(x1,x2)=x1^2+2x2^2') epoch50, x1:0.108062, x2:0.041646 随机梯度下降只用一个样本进行更新，这也带来了劣势。首先是向量运算无法充分利用 GPU 的矩阵并行计算能力，其次是单样本梯度估计的方差较大，导致收敛路径震荡剧烈。为解决这两个问题，实际使用时通常用小批量随机梯度下降\n单个样本的方差是 $$\\text{Var}(\\hat{g}) = \\text{Var}(g_i) = \\sigma^2$$估计量是 \\(m\\) 个样本梯度的平均值 $$\\hat{g}_{\\text{m}} = \\frac{1}{m} \\sum_{j=1}^{m} g_{i_j}$$要计算这个平均值的方差,需要利用方差的两个性质，假设样本独立同分布：\n\\(\\text{Var}(cX) = c^2 \\text{Var}(X)\\) 若 \\(X, Y\\) 独立，\\(\\text{Var}(X+Y) = \\text{Var}(X) + \\text{Var}(Y)\\) 推导过程如下： $$ \\begin{aligned} \\text{Var}(\\hat{g}_{\\text{m}}) \u0026= \\text{Var}\\left( \\frac{1}{m} \\sum_{j=1}^{m} g_{i_j} \\right) \\\\ \u0026= \\frac{1}{m^2} \\text{Var}\\left( \\sum_{j=1}^{m} g_{i_j} \\right) \\quad \\leftarrow \\text{性质 1 } \\\\ \u0026= \\frac{1}{m^2} \\sum_{j=1}^{m} \\text{Var}(g_{i_j}) \\quad \\leftarrow \\text{性质 2} \\\\ \u0026= \\frac{1}{m^2} \\cdot m \\cdot \\sigma^2 \\quad \\leftarrow \\text{共有 } m \\text{ 个项，每项方差为 } \\sigma^2 \\\\ \u0026= \\frac{\\sigma^2}{m} \\end{aligned} $$ 所以说，当\\(m\\)增大时，梯度方差是降低的\n本节后续内容还请自行阅读书籍啦\nSGD看起来已经可以兼顾时间空间，本文结束了！优化算法的时代结…..\n真，真的吗？\n我们不妨来看下面的情况，使用普通的SGD\n$f(x_1,x_2)=0.1x_1^2+10x_2^2$\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 def f_2d(x1,x2): return 0.1*x1**2+10*x2**2 def f_2d_grad(x1, x2): return 0.2 * x1, 20 * x2 def sgd(x1,x2,s1,s2,f_grad): g1,g2 = f_grad(x1,x2) # 增加随机噪声，实际中只用部分样本计算的梯度自带噪声 g1 += torch.normal(0.0,1,(1,)) g2 += torch.normal(0.0,1,(1,)) eta_t = eta *lr() return (x1-eta_t*g1,x2-eta_t*g2,0,0) t = 1 eta = 0.1 lr = polynomial_lr res_2d = train_2d(sgd, steps=100, f_grad=f_2d_grad) show_trace_2d(f_2d, res_2d, title='SGD on f(x1,x2)=0.1*x1^2+10*x2^2',show_trace=False) t = 1 eta = 0.1 res_2d = train_2d(sgd, steps=500, f_grad=f_2d_grad) show_trace_2d(f_2d, res_2d, title='SGD on f(x1,x2)=0.1*x1^2+10*x2^2') epoch100, x1:-2.063512, x2:0.006416 epoch500, x1:-0.561228, x2:-0.032223 可以看到在“狭长峡谷”上非常缓慢地向右前进，即使提高步数也是杯水车薪。那么如果提高学习率呢？\n1 2 3 4 5 6 7 8 9 t = 1 eta = 0.2 lr = polynomial_lr res_2d = train_2d(sgd, steps=100, f_grad=f_2d_grad) show_trace_2d(f_2d, res_2d, title='SGD on f(x1,x2)=0.1*x1^2+10*x2^2',show_trace=False) t = 1 eta = 0.2 res_2d = train_2d(sgd, steps=500, f_grad=f_2d_grad) show_trace_2d(f_2d, res_2d, title='SGD on f(x1,x2)=0.1*x1^2+10*x2^2') epoch100, x1:-0.517543, x2:0.074684 epoch500, x1:-0.294282, x2:-0.027534 看起来非常恐怖，中间反复横跳，甚至绝对值一度超过了$400000$，或者我们试试更低的学习率\n1 2 3 4 5 6 7 8 9 10 11 12 13 t = 1 eta = 0.02 lr = polynomial_lr res_2d = train_2d(sgd, steps=100, f_grad=f_2d_grad) show_trace_2d(f_2d, res_2d, title='SGD on f(x1,x2)=0.1*x1^2+10*x2^2',show_trace=False) t = 1 eta = 0.02 res_2d = train_2d(sgd, steps=500, f_grad=f_2d_grad) show_trace_2d(f_2d, res_2d, title='SGD on f(x1,x2)=0.1*x1^2+10*x2^2',show_trace=False) t = 1 eta = 0.02 res_2d = train_2d(sgd, steps=10000, f_grad=f_2d_grad) show_trace_2d(f_2d, res_2d, title='SGD on f(x1,x2)=0.1*x1^2+10*x2^2') epoch100, x1:-4.278404, x2:0.017078 epoch500, x1:-3.084149, x2:0.006751 epoch10000, x1:-0.454990, x2:-0.000830 这就是另一种恐怖了，$x_1$跑了$10000$轮还没有慢慢收敛到正确的地方，所以说SGD看起来并不适合这种不同自变量梯度差距较大的情况，那么可能会有疑问，普通GD呢？\n1 2 3 4 5 6 7 8 9 def gd_2d(x1, x2, s1, s2, f_grad): eta = 0.02 g1, g2 = f_grad(x1, x2) return x1 - eta * g1, x2 - eta * g2, 0, 0 res_2d = train_2d(gd_2d, steps=50, f_grad=f_2d_grad) show_trace_2d(f_2d, res_2d, title='GD on f(x1,x2)=0.1*x1^2+10*x2^2',show_trace=False) res_2d = train_2d(gd_2d, steps=5000, f_grad=f_2d_grad) show_trace_2d(f_2d, res_2d, title='GD on f(x1,x2)=0.1*x1^2+10*x2^2') epoch50, x1:-4.092012, x2:-0.000000 epoch5000, x1:-0.000000, x2:-0.000000 没想到同样的学习率，普通的GD竟然只用了$5000$轮就完成了收敛。还可能存在一种疑问，就是如果SGD换成固定学习率或者是稍微高点的学习率呢？\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 t = 1 eta = 0.02 lr = constant_lr res_2d = train_2d(sgd, steps=100, f_grad=f_2d_grad) show_trace_2d(f_2d, res_2d, title='SGD on f(x1,x2)=0.1*x1^2+10*x2^2',show_trace=False) t = 1 eta = 0.02 res_2d = train_2d(sgd, steps=500, f_grad=f_2d_grad) show_trace_2d(f_2d, res_2d, title='SGD on f(x1,x2)=0.1*x1^2+10*x2^2',show_trace=False) t = 1 eta = 0.02 res_2d = train_2d(sgd, steps=10000, f_grad=f_2d_grad) show_trace_2d(f_2d, res_2d, title='SGD on f(x1,x2)=0.1*x1^2+10*x2^2') t = 1 eta = 0.05 lr = polynomial_lr res_2d = train_2d(sgd, steps=100, f_grad=f_2d_grad) show_trace_2d(f_2d, res_2d, title='SGD on f(x1,x2)=0.1*x1^2+10*x2^2',show_trace=False) t = 1 eta = 0.05 res_2d = train_2d(sgd, steps=500, f_grad=f_2d_grad) show_trace_2d(f_2d, res_2d, title='SGD on f(x1,x2)=0.1*x1^2+10*x2^2',show_trace=False) t = 1 eta = 0.05 res_2d = train_2d(sgd, steps=10000, f_grad=f_2d_grad) show_trace_2d(f_2d, res_2d, title='SGD on f(x1,x2)=0.1*x1^2+10*x2^2') epoch100, x1:-3.211442, x2:0.000465 epoch500, x1:-0.571092, x2:0.041077 epoch10000, x1:-0.426865, x2:0.001753 epoch100, x1:-3.305861, x2:-0.013946 epoch500, x1:-1.492732, x2:0.022477 epoch10000, x1:-0.007610, x2:0.010288 几乎可以确认，SGD在这个问题上速度竟然不如原版GD了，甚至有的时候会跳过正确答案，在两边反复横跳\n考虑下这个问题，在$x_1$, $x_2$两个方向上的梯度差距过大，相同学习率的情况下，一个反复横跳，一个慢吞吞走。我们想要的是让反复横跳的慢点，然后慢吞吞的那个快点，换言之就是给走的过快的反复横跳的调低学习率，给走得慢的提高学习率。如何实现呢？\n我们要先考虑什么是“反复横跳”，就是梯度发生了进行正负变换，同时学习率与梯度相乘的绝对值是大于当前位置与收敛点的距离的；而“慢吞吞”的则说明梯度正负保持不变，仅仅是梯度较小\n考虑到这个性质，很直接就能想到，“横跳”在一些统计学特征与“慢吞吞”的有明显差异，当然，这是后面的部分了。\n还可以注意到累加会让横跳的正负抵消掉，同时让慢吞吞的累加变大（我感觉我没法“注意到”）\n那么这就是引入下面的方法了：\n动量法 维护另外的量用于累计之前的梯度，这个量被称为动量(momentum) $v$，还可以引入一个$\\beta \\in [0,1]$来调控历史梯度的影响（怎么感觉有点像某种RNN了）\n此时的更新公式如下，其中$g_{t,t-1}$就是用$x_{t-1}计算的梯度$ $$ v_t \\leftarrow \\beta v_{t-1} + g_{t,t-1} $$ $$ x_t \\leftarrow x_{t-1} - \\eta v_t$$接下来试试动量法效果如何吧\n1 2 3 4 5 6 7 8 9 10 11 12 def momentum_2d(x1,x2,v1,v2): v1 = beta * v1 + 0.2 * x1 v2 = beta * v2 + 20 * x2 return x1 - eta * v1, x2 - eta * v2, v1, v2 eta,beta = 0.1,0.5 res_2d = train_2d(momentum_2d, steps=50) show_trace_2d(f_2d, res_2d, title='Momentum on f(x1,x2)=0.1*x1^2+10*x2^2',show=False) res_2d = train_2d(momentum_2d, steps=500) show_trace_2d(f_2d, res_2d, title='Momentum on f(x1,x2)=0.1*x1^2+10*x2^2') epoch50, x1:-0.620000, x2:0.000000 epoch500, x1:-0.000000, x2:-0.000000 可以看到仅仅需要$500$次，动量法就很好地收敛了。\n可以在 Why Momentum Really Works 交互体验效果\n$v_t$ 也可以写作 $\\sum^{t-1}_{\\tau=0} \\beta ^{\\tau} g_{t-\\tau,t-\\tau -1} $，也就是说第$i$个梯度对第$j$个梯度的影响是$\\beta ^{j-i} g_i$\n而 $\\sum^{\\infty}_{\\tau=0} \\beta ^{\\tau} = \\frac{1}{1-\\beta}$，所以说动量法会让按照之前学习率的更新步长$\\eta v_t$变成$(1-\\beta)$倍。所以需要调整新的学习率为$\\frac{\\eta}{1-\\beta}$\n本节后续内容还请自行阅读书籍啦\n所以说动量法就无敌了吗？\n500步似乎还是太多了，能不能让它学习得再快点？\n1 2 3 4 5 6 7 8 9 10 11 12 def momentum_2d(x1,x2,v1,v2): v1 = beta * v1 + 0.2 * x1 v2 = beta * v2 + 20 * x2 return x1 - eta * v1, x2 - eta * v2, v1, v2 eta,beta = 0.2,0.5 res_2d = train_2d(momentum_2d, steps=50) show_trace_2d(f_2d, res_2d, title='Momentum on f(x1,x2)=0.1*x1^2+10*x2^2',show=False) res_2d = train_2d(momentum_2d, steps=500) show_trace_2d(f_2d, res_2d, title='Momentum on f(x1,x2)=0.1*x1^2+10*x2^2') epoch50, x1:-0.054783, x2:-2163401805974677504.000000 epoch500, x1:-0.000000, x2:-296727278529656660666248966637069386465103612668958140152820014382534699916011834206269932680493656464553724555731126971411825227097885375901158837286072555582070825133952718602240.000000 可以看到，我们想让动量法快一点，结果梯度大的那个还是给爆炸了，可能会有人觉得是$\\beta$太小了，一般是$0.9-0.99$\n那我们再试试\n1 2 3 4 5 6 7 8 9 10 11 12 def momentum_2d(x1,x2,v1,v2): v1 = beta * v1 + 0.2 * x1 v2 = beta * v2 + 20 * x2 return x1 - eta * v1, x2 - eta * v2, v1, v2 eta,beta = 0.2,0.99 res_2d = train_2d(momentum_2d, steps=50) show_trace_2d(f_2d, res_2d, title='Momentum on f(x1,x2)=0.1*x1^2+10*x2^2',show=False) res_2d = train_2d(momentum_2d, steps=500) show_trace_2d(f_2d, res_2d, title='Momentum on f(x1,x2)=0.1*x1^2+10*x2^2') epoch50, x1:3.009175, x2:-14054.174423 epoch500, x1:-0.405540, x2:-7375450158951055580489595224064.000000 结果依然是爆炸的\n详细咨询了LLM，它提出我们的“优化算法”本质是一种时间离散的迭代法，可以利用Jurry依据来判断是否稳定。\nLLM计算了目标函数的Hessian矩阵的特征值$\\lambda$，其中$g=\\lambda x$（来源可能还需要一些补充，这里不写了）\n目标函数中$x_1$,$x_2$互不影响，可以单独进行分析。先把$v_t$代入$x_t$的式子消元，得到$x$的二阶递推关系\n1.由$x_{t-1}=x_{t-2}-\\eta v_{t-1}$得$v_{t-1}=\\frac{1}{\\eta}(x_{t-2}-x_{t-1})$\n2.代入$v_t$，得$v_t = \\frac{\\beta}{\\eta}(x_{t-2}-x_{t-1}) + \\lambda x_{t-1} $\n3.代入$x_t$更新公式，得到 $$ \\begin{aligned} x_t \u0026= x_t-1 -\\eta[\\frac{\\beta}{\\eta}(x_{t-2}-x_{t-1}) + \\lambda x_{t-1}] \\\\ \u0026= x_t-1 -\\beta(x_{t-2}-x_{t-1}) -\\eta \\lambda x_{t-1}\\\\ \u0026= (1-\\eta \\lambda+\\beta)x_{t-1} -\\beta x_{t-2} \\end{aligned} $$其特征方程为 $$r^2 - (1-\\eta \\lambda+\\beta) r +\\beta=0$$$|r_1|\u003c1,|r_2|\u003c1$时收敛\n然后根据Jurry依据，得到$\\eta \\lt \\frac{2(1+\\beta)}{\\lambda}$\n所以说，当$\\beta = 0.99$时，$\\eta \\lt \\frac{2(1+0.99)}{20} = 0.199 $\n我们再试试$\\eta = 0.198$\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 def momentum_2d(x1,x2,v1,v2): v1 = beta * v1 + 0.2 * x1 v2 = beta * v2 + 20 * x2 return x1 - eta * v1, x2 - eta * v2, v1, v2 eta,beta = 0.198,0.99 res_2d = train_2d(momentum_2d, steps=50) show_trace_2d(f_2d, res_2d, title='Momentum on f(x1,x2)=0.1*x1^2+10*x2^2',show=False) res_2d = train_2d(momentum_2d, steps=500) show_trace_2d(f_2d, res_2d, title='Momentum on f(x1,x2)=0.1*x1^2+10*x2^2',show=False) res_2d = train_2d(momentum_2d, steps=3000) show_trace_2d(f_2d, res_2d, title='Momentum on f(x1,x2)=0.1*x1^2+10*x2^2') epoch50, x1:3.131956, x2:-16.857397 epoch500, x1:-0.341571, x2:-2.188185 epoch3000, x1:0.000001, x2:0.000008 可以看到提高学习率，反而$3000$轮左右才收敛，还不如之前的参数。\n那么说明我们这种简单加权累加历史梯度的效果还是有限的，要实现“给走的过快的反复横跳的调低学习率，给走得慢的提高学习率”，需要寻找其他的方法了\n就像之前说的，完全可以利用两者某些统计特征的差异，来分配不同的学习率\n比较好想的统计特征可能是绝对值之和、平方和、方差之类的\n我们来试试绝对值之和的效果会有什么改进吧\n与动量法不同，我们是要根据其统计特征对学习率进行缩放，一个可能的方式如下，这里的 $\\epsilon$防止除零错误 $$s_t \\leftarrow s_{t-1} + |g_t|, \\quad x_t \\leftarrow x_{t-1} - \\frac{\\eta}{s_t + \\epsilon} g_t$$ 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 def abs_2d(x1,x2,s1,s2): s1 = s1 + abs(0.2 * x1) s2 = s2 + abs(20 * x2) return x1 - eta / (s1 + epsilon) * 0.2 * x1,x2 - eta / (s2 + epsilon) * 20 * x2 ,s1,s2 eta,epsilon = 1,1e-6 res_2d = train_2d(abs_2d, steps=50) show_trace_2d(f_2d, res_2d, title='Abs on f(x1,x2)=0.1*x1^2+10*x2^2',show=False) res_2d = train_2d(abs_2d, steps=500) show_trace_2d(f_2d, res_2d, title='Abs on f(x1,x2)=0.1*x1^2+10*x2^2',show=False) res_2d = train_2d(abs_2d, steps=5000) show_trace_2d(f_2d, res_2d, title='Abs on f(x1,x2)=0.1*x1^2+10*x2^2') epoch50, x1:-1.283700, x2:-0.000064 epoch500, x1:-0.165460, x2:-0.000000 epoch5000, x1:-0.000001, x2:-0.000000 明显稳得多了，不够就是有点太慢了，如果调高学习率呢？\n1 2 3 4 5 6 7 8 9 10 11 12 def abs_2d(x1,x2,s1,s2): s1 = s1 + abs(0.2 * x1) s2 = s2 + abs(20 * x2) return x1 - eta / (s1 + epsilon) * 0.2 * x1,x2 - eta / (s2 + epsilon) * 20 * x2 ,s1,s2 eta,epsilon = 2,1e-6 res_2d = train_2d(abs_2d, steps=50) show_trace_2d(f_2d, res_2d, title='Abs on f(x1,x2)=0.1*x1^2+10*x2^2',show=False) res_2d = train_2d(abs_2d, steps=200) show_trace_2d(f_2d, res_2d, title='Abs on f(x1,x2)=0.1*x1^2+10*x2^2') epoch50, x1:-0.020967, x2:0.000000 epoch200, x1:-0.000000, x2:0.000000 看起来绝对值作为统计历史梯度的方法效果还不错，那为啥人们后来还是抛弃了绝对值呢？\n很明显的一个缺点是还是太慢，但本质上的问题我暂时也没有时间精力来考虑了，让我们直接跳到下一个环节,当然建议也是详细阅读原书的该部分，我不太理解,,, ","wordCount":"2184","inLanguage":"en","image":"https://avatars.githubusercontent.com/u/88238811?v=4","datePublished":"2026-03-09T00:00:00Z","dateModified":"2026-03-14T00:00:00Z","author":{"@type":"Person","name":"qbning"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://qbning.github.io/posts/%E4%BC%98%E5%8C%96%E7%AE%97%E6%B3%95%E5%AD%A6%E4%B9%A0/"},"publisher":{"@type":"Organization","name":"qbning's site","logo":{"@type":"ImageObject","url":"https://avatars.githubusercontent.com/u/88238811?v=4"}}}</script></head><body id=top><script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add("dark"):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove("dark"):window.matchMedia("(prefers-color-scheme: dark)").matches&&document.body.classList.add("dark")</script><header class=header><nav class=nav><div class=logo><a href=https://qbning.github.io/ accesskey=h title="qbning's site (Alt + H)">qbning's site</a><div class=logo-switches><button id=theme-toggle accesskey=t title="(Alt + T)" aria-label="Toggle theme">
+<svg id="moon" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+<svg id="sun" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div></div><ul id=menu><li><a href=https://qbning.github.io/archives/ title=归档><span>归档</span></a></li><li><a href=https://qbning.github.io/categories/ title=分类><span>分类</span></a></li><li><a href=https://qbning.github.io/tags/ title=标签><span>标签</span></a></li><li><a href=https://qbning.github.io/friends/ title=友链><span>友链</span></a></li><li><a href=https://qbning.github.io/search/ title=搜索><span>搜索</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><div class=breadcrumbs><a href=https://qbning.github.io/>Home</a>&nbsp;»&nbsp;<a href=https://qbning.github.io/posts/>Posts</a></div><h1 class="post-title entry-hint-parent">优化算法学习</h1><div class=post-meta>发布于:&nbsp;<span title='2026-03-09 00:00:00 +0000 UTC'>2026-03-09</span>&nbsp;·&nbsp;更新于:&nbsp;2026-03-14&nbsp;·&nbsp;11 分钟&nbsp;·&nbsp;2184 字&nbsp;·&nbsp;qbning</div><div style=margin-top:20px;display:flex;align-items:center><b>分类：</b><ul class=post-tags><li><a href=https://qbning.github.io/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/>机器学习</a></li></ul></div><div style=margin-top:10px;display:flex;align-items:center><b>标签：</b><ul class=post-tags><li><a href=https://qbning.github.io/tags/%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D/>梯度下降</a></li><li><a href=https://qbning.github.io/tags/%E5%8A%A8%E9%87%8F%E6%B3%95/>动量法</a></li></ul></div><br><hr></header><aside id=toc-container class="toc-container wide"><div class=toc><details open><summary accesskey=c title="(Alt + C)"><span class=details>目录</span></summary><div class=inner><ul><li><a href=#%e6%a2%af%e5%ba%a6%e4%b8%8b%e9%99%8d aria-label=梯度下降>梯度下降</a></li><li><a href=#%e9%9a%8f%e6%9c%ba%e6%a2%af%e5%ba%a6%e4%b8%8b%e9%99%8d aria-label=随机梯度下降>随机梯度下降</a></li><li><a href=#%e5%8a%a8%e9%87%8f%e6%b3%95 aria-label=动量法>动量法</a></li></ul></div></details></div></aside><script>let activeElement,elements=[];const tocContainer=document.getElementById("toc-container"),tocSummary=tocContainer?tocContainer.querySelector(".toc details summary"):null,tocCollapsedStorageKey="papermod-toc-collapsed";function updateTocHandleWidth(){if(!tocContainer||!tocSummary||!tocContainer.classList.contains("wide"))return;const e=Math.ceil(tocSummary.getBoundingClientRect().width);e>0&&tocContainer.style.setProperty("--toc-handle-width",`${e}px`)}function setTocCollapsed(e,t=!0){if(!tocContainer||!tocSummary)return;tocContainer.classList.toggle("toc-collapsed",e),tocSummary.setAttribute("aria-label",e?"展开目录":"收起目录"),tocSummary.setAttribute("title",e?"展开目录":"收起目录"),tocSummary.setAttribute("aria-expanded",(!e).toString()),t&&localStorage.setItem(tocCollapsedStorageKey,e?"1":"0")}window.addEventListener("DOMContentLoaded",function(){checkTocPosition(),updateTocHandleWidth(),elements=document.querySelectorAll("h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]"),activeElement=elements[0];const t=encodeURI(activeElement.getAttribute("id")).toLowerCase();document.querySelector(`.inner ul li a[href="#${t}"]`).classList.add("active");const n=localStorage.getItem(tocCollapsedStorageKey)==="1";setTocCollapsed(n,!1),tocSummary&&tocSummary.addEventListener("click",function(e){if(!tocContainer.classList.contains("wide"))return;e.preventDefault(),setTocCollapsed(!tocContainer.classList.contains("toc-collapsed"))})},!1),window.addEventListener("resize",function(){checkTocPosition(),updateTocHandleWidth()},!1),window.addEventListener("scroll",()=>{if(!elements||elements.length===0)return;activeElement=Array.from(elements).find(e=>{if(getOffsetTop(e)-window.pageYOffset>0&&getOffsetTop(e)-window.pageYOffset<window.innerHeight/2)return e})||activeElement,elements.forEach(e=>{const t=encodeURI(e.getAttribute("id")).toLowerCase();e===activeElement?document.querySelector(`.inner ul li a[href="#${t}"]`).classList.add("active"):document.querySelector(`.inner ul li a[href="#${t}"]`).classList.remove("active")})},!1);const main=parseInt(getComputedStyle(document.body).getPropertyValue("--article-width"),10),toc=parseInt(getComputedStyle(document.body).getPropertyValue("--toc-width"),10),gap=parseInt(getComputedStyle(document.body).getPropertyValue("--gap"),10);function checkTocPosition(){const e=document.body.scrollWidth;e-main-toc*2-gap*4>0?document.getElementById("toc-container").classList.add("wide"):document.getElementById("toc-container").classList.remove("wide"),updateTocHandleWidth()}function getOffsetTop(e){if(!e.getClientRects().length)return 0;let t=e.getBoundingClientRect(),n=e.ownerDocument.defaultView;return t.top+n.pageYOffset}</script><div class=post-content><p>参考 <a href=https://zh-v2.d2l.ai/chapter_optimization/index.html target=_blank>动手学深度学习-11.优化算法</a></p><p>AI辅助创作，部分内容因个人时间精力进行了取舍</p><h1 id=梯度下降>梯度下降<a hidden class=anchor aria-hidden=true href=#梯度下降>#</a></h1><p>利用泰勒展开，\(f(x+\epsilon) = f(x) + \epsilon f'(x)+O(\epsilon ^ 2)\)，由于我们的目的是求得另一个\(x_1\)，使得\(f(x_1) \lt f(x)\)，其中\(x_1=x+\epsilon\)</p><p>换言之就是让$\epsilon f'(x)<0$</p><p>固定步长为\(\eta>0\),取\(\epsilon=-\eta f'(x)\),代入可得\(\epsilon f'(x) = -\eta f'(x)^2 <0\)</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=o>%</span><span class=n>matplotlib</span> <span class=n>inline</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>numpy</span> <span class=k>as</span> <span class=nn>np</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>torch</span>
+</span></span><span class=line><span class=cl><span class=kn>from</span> <span class=nn>d2l</span> <span class=kn>import</span> <span class=n>torch</span> <span class=k>as</span> <span class=n>d2l</span>
+</span></span></code></pre></td></tr></table></div></div><p>定义目标函数为\(f(x)=x^2\),目标函数导数为\(2x\)</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=k>def</span> <span class=nf>f</span><span class=p>(</span><span class=n>x</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>x</span> <span class=o>**</span> <span class=mi>2</span>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>f_grad</span><span class=p>(</span><span class=n>x</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=mi>2</span> <span class=o>*</span> <span class=n>x</span>
+</span></span></code></pre></td></tr></table></div></div><p>使用\(x=10\)作为初始值，设\(\eta=0.2\)，使用梯度下降法迭代\(10\)次</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>matplotlib.pyplot</span> <span class=k>as</span> <span class=nn>plt</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>gd</span><span class=p>(</span><span class=n>eta</span><span class=p>,</span><span class=n>f_grad</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=n>x</span> <span class=o>=</span> <span class=mi>10</span>
+</span></span><span class=line><span class=cl>    <span class=n>results</span> <span class=o>=</span> <span class=p>[</span><span class=n>x</span><span class=p>]</span>
+</span></span><span class=line><span class=cl>    <span class=k>for</span> <span class=n>i</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=mi>10</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=n>x</span> <span class=o>-=</span> <span class=n>eta</span> <span class=o>*</span> <span class=n>f_grad</span><span class=p>(</span><span class=n>x</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>results</span><span class=o>.</span><span class=n>append</span><span class=p>(</span><span class=nb>float</span><span class=p>(</span><span class=n>x</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>    <span class=nb>print</span><span class=p>(</span><span class=sa>f</span><span class=s1>&#39;epoch 10,x:</span><span class=si>{</span><span class=n>x</span><span class=si>:</span><span class=s1>f</span><span class=si>}</span><span class=s1>&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>results</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>_trace_history</span> <span class=o>=</span> <span class=p>[]</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>show_trace</span><span class=p>(</span><span class=n>results</span><span class=p>,</span> <span class=n>f</span><span class=p>,</span> <span class=n>title</span><span class=o>=</span><span class=kc>None</span><span class=p>,</span> <span class=n>max_cols</span><span class=o>=</span><span class=mi>3</span><span class=p>,</span> <span class=n>reset</span><span class=o>=</span><span class=kc>False</span><span class=p>,</span> <span class=n>show</span><span class=o>=</span><span class=kc>True</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=k>global</span> <span class=n>_trace_history</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=n>reset</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=n>_trace_history</span> <span class=o>=</span> <span class=p>[]</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>_trace_history</span><span class=o>.</span><span class=n>append</span><span class=p>((</span><span class=n>results</span><span class=p>,</span> <span class=n>f</span><span class=p>,</span> <span class=n>title</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=ow>not</span> <span class=n>show</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>n</span> <span class=o>=</span> <span class=nb>len</span><span class=p>(</span><span class=n>_trace_history</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=n>cols</span> <span class=o>=</span> <span class=nb>min</span><span class=p>(</span><span class=n>max_cols</span><span class=p>,</span> <span class=n>n</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=n>traces</span> <span class=o>=</span> <span class=n>_trace_history</span><span class=p>[</span><span class=o>-</span><span class=n>cols</span><span class=p>:]</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>fig</span><span class=p>,</span> <span class=n>axes</span> <span class=o>=</span> <span class=n>plt</span><span class=o>.</span><span class=n>subplots</span><span class=p>(</span><span class=mi>1</span><span class=p>,</span> <span class=n>cols</span><span class=p>,</span> <span class=n>figsize</span><span class=o>=</span><span class=p>(</span><span class=mf>4.8</span> <span class=o>*</span> <span class=n>cols</span><span class=p>,</span> <span class=mf>3.6</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=n>cols</span> <span class=o>==</span> <span class=mi>1</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=n>axes</span> <span class=o>=</span> <span class=p>[</span><span class=n>axes</span><span class=p>]</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>for</span> <span class=n>i</span><span class=p>,</span> <span class=p>(</span><span class=n>ax</span><span class=p>,</span> <span class=p>(</span><span class=n>res</span><span class=p>,</span> <span class=n>func</span><span class=p>,</span> <span class=n>t</span><span class=p>))</span> <span class=ow>in</span> <span class=nb>enumerate</span><span class=p>(</span><span class=nb>zip</span><span class=p>(</span><span class=n>axes</span><span class=p>,</span> <span class=n>traces</span><span class=p>),</span> <span class=n>start</span><span class=o>=</span><span class=n>n</span> <span class=o>-</span> <span class=n>cols</span> <span class=o>+</span> <span class=mi>1</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=n>bound</span> <span class=o>=</span> <span class=nb>max</span><span class=p>(</span><span class=nb>abs</span><span class=p>(</span><span class=nb>min</span><span class=p>(</span><span class=n>res</span><span class=p>)),</span> <span class=nb>abs</span><span class=p>(</span><span class=nb>max</span><span class=p>(</span><span class=n>res</span><span class=p>)))</span>
+</span></span><span class=line><span class=cl>        <span class=n>f_line</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>arange</span><span class=p>(</span><span class=o>-</span><span class=n>bound</span><span class=p>,</span> <span class=n>bound</span><span class=p>,</span> <span class=mf>0.01</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>x_line</span> <span class=o>=</span> <span class=n>f_line</span><span class=o>.</span><span class=n>numpy</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>        <span class=n>y_line</span> <span class=o>=</span> <span class=p>[</span><span class=nb>float</span><span class=p>(</span><span class=n>func</span><span class=p>(</span><span class=n>x</span><span class=p>))</span> <span class=k>for</span> <span class=n>x</span> <span class=ow>in</span> <span class=n>f_line</span><span class=p>]</span>
+</span></span><span class=line><span class=cl>        <span class=n>x_res</span> <span class=o>=</span> <span class=p>[</span><span class=nb>float</span><span class=p>(</span><span class=n>x</span><span class=p>)</span> <span class=k>for</span> <span class=n>x</span> <span class=ow>in</span> <span class=n>res</span><span class=p>]</span>
+</span></span><span class=line><span class=cl>        <span class=n>y_res</span> <span class=o>=</span> <span class=p>[</span><span class=nb>float</span><span class=p>(</span><span class=n>func</span><span class=p>(</span><span class=n>x</span><span class=p>))</span> <span class=k>for</span> <span class=n>x</span> <span class=ow>in</span> <span class=n>res</span><span class=p>]</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=n>ax</span><span class=o>.</span><span class=n>plot</span><span class=p>(</span><span class=n>x_line</span><span class=p>,</span> <span class=n>y_line</span><span class=p>,</span> <span class=s1>&#39;-&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>ax</span><span class=o>.</span><span class=n>plot</span><span class=p>(</span><span class=n>x_res</span><span class=p>,</span> <span class=n>y_res</span><span class=p>,</span> <span class=s1>&#39;-o&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>ax</span><span class=o>.</span><span class=n>set_xlabel</span><span class=p>(</span><span class=s1>&#39;x&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>ax</span><span class=o>.</span><span class=n>set_ylabel</span><span class=p>(</span><span class=s1>&#39;f(x)&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>ax</span><span class=o>.</span><span class=n>set_title</span><span class=p>(</span><span class=n>t</span> <span class=k>if</span> <span class=n>t</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span> <span class=k>else</span> <span class=sa>f</span><span class=s1>&#39;第</span><span class=si>{</span><span class=n>i</span><span class=si>}</span><span class=s1>次轨迹&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>ax</span><span class=o>.</span><span class=n>grid</span><span class=p>(</span><span class=n>alpha</span><span class=o>=</span><span class=mf>0.3</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>plt</span><span class=o>.</span><span class=n>tight_layout</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=n>plt</span><span class=o>.</span><span class=n>show</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>results</span> <span class=o>=</span> <span class=n>gd</span><span class=p>(</span><span class=mf>0.2</span><span class=p>,</span><span class=n>f_grad</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>show_trace</span><span class=p>(</span><span class=n>results</span><span class=p>,</span> <span class=n>f</span><span class=p>,</span> <span class=n>title</span><span class=o>=</span><span class=s1>&#39;eta=0.2&#39;</span><span class=p>,</span> <span class=n>reset</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><pre><code>epoch 10,x:7.295479
+</code></pre><p><img loading=lazy src=https://qbning.github.io/img/优化算法学习/优化算法学习_6_1.png></p><p>学习率决定目标函数能否收敛到最小值，以及决定收敛速度，学习率过低可能收敛过慢</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=n>show_trace</span><span class=p>(</span><span class=n>gd</span><span class=p>(</span><span class=mf>0.05</span><span class=p>,</span><span class=n>f_grad</span><span class=p>),</span> <span class=n>f</span><span class=p>,</span> <span class=n>title</span><span class=o>=</span><span class=s1>&#39;eta=0.05&#39;</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><pre><code>epoch 10,x:3.486784
+</code></pre><p><img loading=lazy src=https://qbning.github.io/img/优化算法学习/优化算法学习_8_1.svg></p><p>学习率过高可能导致高阶项无法忽视导致发散</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=n>show_trace</span><span class=p>(</span><span class=n>gd</span><span class=p>(</span><span class=mf>1.2</span><span class=p>,</span><span class=n>f_grad</span><span class=p>),</span> <span class=n>f</span><span class=p>,</span> <span class=n>title</span><span class=o>=</span><span class=s1>&#39;eta=1.2&#39;</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><pre><code>epoch 10,x:289.254655
+</code></pre><p><img loading=lazy src=https://qbning.github.io/img/优化算法学习/优化算法学习_10_1.svg></p><p>在非凸函数中，梯度下降并不保证找到全局最小值，它通常会收敛到“离初始点最近”的那个局部最小值或者鞍点</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=n>c</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>tensor</span><span class=p>(</span><span class=mf>0.15</span> <span class=o>*</span> <span class=n>np</span><span class=o>.</span><span class=n>pi</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>f</span><span class=p>(</span><span class=n>x</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>x</span> <span class=o>*</span> <span class=n>torch</span><span class=o>.</span><span class=n>cos</span><span class=p>(</span><span class=n>c</span> <span class=o>*</span> <span class=n>x</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>f_grad</span><span class=p>(</span><span class=n>x</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>torch</span><span class=o>.</span><span class=n>cos</span><span class=p>(</span><span class=n>c</span> <span class=o>*</span> <span class=n>x</span><span class=p>)</span> <span class=o>-</span> <span class=n>c</span> <span class=o>*</span> <span class=n>x</span> <span class=o>*</span> <span class=n>torch</span><span class=o>.</span><span class=n>sin</span><span class=p>(</span><span class=n>c</span> <span class=o>*</span> <span class=n>x</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>show_trace</span><span class=p>(</span><span class=n>gd</span><span class=p>(</span><span class=mi>2</span><span class=p>,</span><span class=n>f_grad</span><span class=p>),</span> <span class=n>f</span><span class=p>,</span> <span class=n>title</span><span class=o>=</span><span class=s1>&#39;non-convex eta=2&#39;</span><span class=p>,</span> <span class=n>reset</span><span class=o>=</span><span class=kc>True</span><span class=p>,</span> <span class=n>show</span><span class=o>=</span><span class=kc>False</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>show_trace</span><span class=p>(</span><span class=n>gd</span><span class=p>(</span><span class=mf>0.2</span><span class=p>,</span><span class=n>f_grad</span><span class=p>),</span> <span class=n>f</span><span class=p>,</span> <span class=n>title</span><span class=o>=</span><span class=s1>&#39;non-convex eta=0.2&#39;</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><pre><code>epoch 10,x:-1.528166
+epoch 10,x:7.295479
+</code></pre><p><img loading=lazy src=https://qbning.github.io/img/优化算法学习/优化算法学习_12_1.svg></p><p>多元梯度下降 \(\pmb{x}\leftarrow \pmb{x}-\eta\nabla f(\pmb{x})\)</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span><span class=lnt>65
+</span><span class=lnt>66
+</span><span class=lnt>67
+</span><span class=lnt>68
+</span><span class=lnt>69
+</span><span class=lnt>70
+</span><span class=lnt>71
+</span><span class=lnt>72
+</span><span class=lnt>73
+</span><span class=lnt>74
+</span><span class=lnt>75
+</span><span class=lnt>76
+</span><span class=lnt>77
+</span><span class=lnt>78
+</span><span class=lnt>79
+</span><span class=lnt>80
+</span><span class=lnt>81
+</span><span class=lnt>82
+</span><span class=lnt>83
+</span><span class=lnt>84
+</span><span class=lnt>85
+</span><span class=lnt>86
+</span><span class=lnt>87
+</span><span class=lnt>88
+</span><span class=lnt>89
+</span><span class=lnt>90
+</span><span class=lnt>91
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=k>def</span> <span class=nf>train_2d</span><span class=p>(</span><span class=n>trainer</span><span class=p>,</span><span class=n>steps</span><span class=o>=</span><span class=mi>20</span><span class=p>,</span><span class=n>f_grad</span><span class=o>=</span><span class=kc>None</span><span class=p>):</span> 
+</span></span><span class=line><span class=cl>    <span class=n>x1</span><span class=p>,</span><span class=n>x2</span><span class=p>,</span><span class=n>s1</span><span class=p>,</span><span class=n>s2</span> <span class=o>=</span> <span class=o>-</span><span class=mi>5</span><span class=p>,</span><span class=o>-</span><span class=mi>2</span><span class=p>,</span><span class=mi>0</span><span class=p>,</span><span class=mi>0</span>
+</span></span><span class=line><span class=cl>    <span class=n>results</span> <span class=o>=</span> <span class=p>[(</span><span class=n>x1</span><span class=p>,</span><span class=n>x2</span><span class=p>)]</span>
+</span></span><span class=line><span class=cl>    <span class=k>for</span> <span class=n>i</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=n>steps</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=n>f_grad</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=n>x1</span><span class=p>,</span><span class=n>x2</span><span class=p>,</span><span class=n>s1</span><span class=p>,</span><span class=n>s2</span> <span class=o>=</span> <span class=n>trainer</span><span class=p>(</span><span class=n>x1</span><span class=p>,</span><span class=n>x2</span><span class=p>,</span><span class=n>s1</span><span class=p>,</span><span class=n>s2</span><span class=p>,</span><span class=n>f_grad</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=k>else</span><span class=p>:</span> 
+</span></span><span class=line><span class=cl>            <span class=n>x1</span><span class=p>,</span><span class=n>x2</span><span class=p>,</span><span class=n>s1</span><span class=p>,</span><span class=n>s2</span> <span class=o>=</span> <span class=n>trainer</span><span class=p>(</span><span class=n>x1</span><span class=p>,</span><span class=n>x2</span><span class=p>,</span><span class=n>s1</span><span class=p>,</span><span class=n>s2</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>results</span><span class=o>.</span><span class=n>append</span><span class=p>((</span><span class=n>x1</span><span class=p>,</span><span class=n>x2</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>    <span class=nb>print</span><span class=p>(</span><span class=sa>f</span><span class=s1>&#39;epoch</span><span class=si>{</span><span class=n>i</span><span class=o>+</span><span class=mi>1</span><span class=si>}</span><span class=s1>, x1:</span><span class=si>{</span><span class=nb>float</span><span class=p>(</span><span class=n>x1</span><span class=p>)</span><span class=si>:</span><span class=s1>f</span><span class=si>}</span><span class=s1>, x2:</span><span class=si>{</span><span class=nb>float</span><span class=p>(</span><span class=n>x2</span><span class=p>)</span><span class=si>:</span><span class=s1>f</span><span class=si>}</span><span class=s1>&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>results</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>_trace2d_pending</span> <span class=o>=</span> <span class=p>[]</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>_to_float_scalar</span><span class=p>(</span><span class=n>v</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=nb>isinstance</span><span class=p>(</span><span class=n>v</span><span class=p>,</span> <span class=n>np</span><span class=o>.</span><span class=n>ndarray</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=n>v</span><span class=o>.</span><span class=n>size</span> <span class=o>!=</span> <span class=mi>1</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=k>raise</span> <span class=ne>ValueError</span><span class=p>(</span><span class=sa>f</span><span class=s1>&#39;期望标量或长度为1的数组，实际 shape=</span><span class=si>{</span><span class=n>v</span><span class=o>.</span><span class=n>shape</span><span class=si>}</span><span class=s1>&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=nb>float</span><span class=p>(</span><span class=n>v</span><span class=o>.</span><span class=n>reshape</span><span class=p>(</span><span class=o>-</span><span class=mi>1</span><span class=p>)[</span><span class=mi>0</span><span class=p>])</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=n>torch</span><span class=o>.</span><span class=n>is_tensor</span><span class=p>(</span><span class=n>v</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=n>v</span><span class=o>.</span><span class=n>numel</span><span class=p>()</span> <span class=o>!=</span> <span class=mi>1</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=k>raise</span> <span class=ne>ValueError</span><span class=p>(</span><span class=sa>f</span><span class=s1>&#39;期望标量或长度为1的张量，实际 shape=</span><span class=si>{</span><span class=nb>tuple</span><span class=p>(</span><span class=n>v</span><span class=o>.</span><span class=n>shape</span><span class=p>)</span><span class=si>}</span><span class=s1>&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=nb>float</span><span class=p>(</span><span class=n>v</span><span class=o>.</span><span class=n>detach</span><span class=p>()</span><span class=o>.</span><span class=n>cpu</span><span class=p>()</span><span class=o>.</span><span class=n>reshape</span><span class=p>(</span><span class=o>-</span><span class=mi>1</span><span class=p>)[</span><span class=mi>0</span><span class=p>])</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=nb>float</span><span class=p>(</span><span class=n>v</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>_eval_surface</span><span class=p>(</span><span class=n>func</span><span class=p>,</span> <span class=n>X1</span><span class=p>,</span> <span class=n>X2</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=k>try</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=n>Z</span> <span class=o>=</span> <span class=n>func</span><span class=p>(</span><span class=n>X1</span><span class=p>,</span> <span class=n>X2</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=n>torch</span><span class=o>.</span><span class=n>is_tensor</span><span class=p>(</span><span class=n>Z</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>            <span class=n>Z</span> <span class=o>=</span> <span class=n>Z</span><span class=o>.</span><span class=n>detach</span><span class=p>()</span><span class=o>.</span><span class=n>cpu</span><span class=p>()</span><span class=o>.</span><span class=n>numpy</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>np</span><span class=o>.</span><span class=n>asarray</span><span class=p>(</span><span class=n>Z</span><span class=p>,</span> <span class=n>dtype</span><span class=o>=</span><span class=nb>float</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=k>except</span> <span class=ne>Exception</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=c1># 兼容仅支持 torch.Tensor 输入的目标函数</span>
+</span></span><span class=line><span class=cl>        <span class=n>X1_t</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>as_tensor</span><span class=p>(</span><span class=n>X1</span><span class=p>,</span> <span class=n>dtype</span><span class=o>=</span><span class=n>torch</span><span class=o>.</span><span class=n>float32</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>X2_t</span> <span class=o>=</span> <span class=n>torch</span><span class=o>.</span><span class=n>as_tensor</span><span class=p>(</span><span class=n>X2</span><span class=p>,</span> <span class=n>dtype</span><span class=o>=</span><span class=n>torch</span><span class=o>.</span><span class=n>float32</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>Z</span> <span class=o>=</span> <span class=n>func</span><span class=p>(</span><span class=n>X1_t</span><span class=p>,</span> <span class=n>X2_t</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=n>torch</span><span class=o>.</span><span class=n>is_tensor</span><span class=p>(</span><span class=n>Z</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>            <span class=n>Z</span> <span class=o>=</span> <span class=n>Z</span><span class=o>.</span><span class=n>detach</span><span class=p>()</span><span class=o>.</span><span class=n>cpu</span><span class=p>()</span><span class=o>.</span><span class=n>numpy</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>np</span><span class=o>.</span><span class=n>asarray</span><span class=p>(</span><span class=n>Z</span><span class=p>,</span> <span class=n>dtype</span><span class=o>=</span><span class=nb>float</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>show_trace_2d</span><span class=p>(</span><span class=n>f</span><span class=p>,</span> <span class=n>results</span><span class=p>,</span> <span class=n>title</span><span class=o>=</span><span class=s1>&#39;2D optimization trace&#39;</span><span class=p>,</span> <span class=n>show</span><span class=o>=</span><span class=kc>True</span><span class=p>,</span> <span class=o>**</span><span class=n>kwargs</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=k>global</span> <span class=n>_trace2d_pending</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=s1>&#39;show_trace&#39;</span> <span class=ow>in</span> <span class=n>kwargs</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=n>show</span> <span class=o>=</span> <span class=n>kwargs</span><span class=o>.</span><span class=n>pop</span><span class=p>(</span><span class=s1>&#39;show_trace&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>_trace2d_pending</span><span class=o>.</span><span class=n>append</span><span class=p>((</span><span class=n>f</span><span class=p>,</span> <span class=n>results</span><span class=p>,</span> <span class=n>title</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1># 延迟显示：先缓存，等下一次 show=True 再统一画图</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=ow>not</span> <span class=n>show</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>traces</span> <span class=o>=</span> <span class=n>_trace2d_pending</span>
+</span></span><span class=line><span class=cl>    <span class=n>n</span> <span class=o>=</span> <span class=nb>len</span><span class=p>(</span><span class=n>traces</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>fig</span><span class=p>,</span> <span class=n>axes</span> <span class=o>=</span> <span class=n>plt</span><span class=o>.</span><span class=n>subplots</span><span class=p>(</span><span class=mi>1</span><span class=p>,</span> <span class=n>n</span><span class=p>,</span> <span class=n>figsize</span><span class=o>=</span><span class=p>(</span><span class=mi>6</span> <span class=o>*</span> <span class=n>n</span><span class=p>,</span> <span class=mi>5</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=n>n</span> <span class=o>==</span> <span class=mi>1</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=n>axes</span> <span class=o>=</span> <span class=p>[</span><span class=n>axes</span><span class=p>]</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>for</span> <span class=n>ax</span><span class=p>,</span> <span class=p>(</span><span class=n>func</span><span class=p>,</span> <span class=n>res</span><span class=p>,</span> <span class=n>t</span><span class=p>)</span> <span class=ow>in</span> <span class=nb>zip</span><span class=p>(</span><span class=n>axes</span><span class=p>,</span> <span class=n>traces</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=n>x1_vals_raw</span><span class=p>,</span> <span class=n>x2_vals_raw</span> <span class=o>=</span> <span class=nb>zip</span><span class=p>(</span><span class=o>*</span><span class=n>res</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>x1_vals</span> <span class=o>=</span> <span class=n>np</span><span class=o>.</span><span class=n>array</span><span class=p>([</span><span class=n>_to_float_scalar</span><span class=p>(</span><span class=n>x</span><span class=p>)</span> <span class=k>for</span> <span class=n>x</span> <span class=ow>in</span> <span class=n>x1_vals_raw</span><span class=p>],</span> <span class=n>dtype</span><span class=o>=</span><span class=nb>float</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>x2_vals</span> <span class=o>=</span> <span class=n>np</span><span class=o>.</span><span class=n>array</span><span class=p>([</span><span class=n>_to_float_scalar</span><span class=p>(</span><span class=n>x</span><span class=p>)</span> <span class=k>for</span> <span class=n>x</span> <span class=ow>in</span> <span class=n>x2_vals_raw</span><span class=p>],</span> <span class=n>dtype</span><span class=o>=</span><span class=nb>float</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=n>x1_min</span><span class=p>,</span> <span class=n>x1_max</span> <span class=o>=</span> <span class=n>x1_vals</span><span class=o>.</span><span class=n>min</span><span class=p>(),</span> <span class=n>x1_vals</span><span class=o>.</span><span class=n>max</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>        <span class=n>x2_min</span><span class=p>,</span> <span class=n>x2_max</span> <span class=o>=</span> <span class=n>x2_vals</span><span class=o>.</span><span class=n>min</span><span class=p>(),</span> <span class=n>x2_vals</span><span class=o>.</span><span class=n>max</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>        <span class=n>pad1</span> <span class=o>=</span> <span class=nb>max</span><span class=p>(</span><span class=mf>1.0</span><span class=p>,</span> <span class=p>(</span><span class=n>x1_max</span> <span class=o>-</span> <span class=n>x1_min</span><span class=p>)</span> <span class=o>*</span> <span class=mf>0.2</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>pad2</span> <span class=o>=</span> <span class=nb>max</span><span class=p>(</span><span class=mf>1.0</span><span class=p>,</span> <span class=p>(</span><span class=n>x2_max</span> <span class=o>-</span> <span class=n>x2_min</span><span class=p>)</span> <span class=o>*</span> <span class=mf>0.2</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=n>x1_grid</span> <span class=o>=</span> <span class=n>np</span><span class=o>.</span><span class=n>linspace</span><span class=p>(</span><span class=n>x1_min</span> <span class=o>-</span> <span class=n>pad1</span><span class=p>,</span> <span class=n>x1_max</span> <span class=o>+</span> <span class=n>pad1</span><span class=p>,</span> <span class=mi>200</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>x2_grid</span> <span class=o>=</span> <span class=n>np</span><span class=o>.</span><span class=n>linspace</span><span class=p>(</span><span class=n>x2_min</span> <span class=o>-</span> <span class=n>pad2</span><span class=p>,</span> <span class=n>x2_max</span> <span class=o>+</span> <span class=n>pad2</span><span class=p>,</span> <span class=mi>200</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>X1</span><span class=p>,</span> <span class=n>X2</span> <span class=o>=</span> <span class=n>np</span><span class=o>.</span><span class=n>meshgrid</span><span class=p>(</span><span class=n>x1_grid</span><span class=p>,</span> <span class=n>x2_grid</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>Z</span> <span class=o>=</span> <span class=n>_eval_surface</span><span class=p>(</span><span class=n>func</span><span class=p>,</span> <span class=n>X1</span><span class=p>,</span> <span class=n>X2</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=n>contours</span> <span class=o>=</span> <span class=n>ax</span><span class=o>.</span><span class=n>contour</span><span class=p>(</span><span class=n>X1</span><span class=p>,</span> <span class=n>X2</span><span class=p>,</span> <span class=n>Z</span><span class=p>,</span> <span class=n>levels</span><span class=o>=</span><span class=mi>20</span><span class=p>,</span> <span class=n>cmap</span><span class=o>=</span><span class=s1>&#39;viridis&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>ax</span><span class=o>.</span><span class=n>clabel</span><span class=p>(</span><span class=n>contours</span><span class=p>,</span> <span class=n>inline</span><span class=o>=</span><span class=kc>True</span><span class=p>,</span> <span class=n>fontsize</span><span class=o>=</span><span class=mi>8</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=n>ax</span><span class=o>.</span><span class=n>plot</span><span class=p>(</span><span class=n>x1_vals</span><span class=p>,</span> <span class=n>x2_vals</span><span class=p>,</span> <span class=s1>&#39;-o&#39;</span><span class=p>,</span> <span class=n>color</span><span class=o>=</span><span class=s1>&#39;tab:red&#39;</span><span class=p>,</span> <span class=n>linewidth</span><span class=o>=</span><span class=mi>2</span><span class=p>,</span> <span class=n>markersize</span><span class=o>=</span><span class=mi>4</span><span class=p>,</span> <span class=n>label</span><span class=o>=</span><span class=s1>&#39;trajectory&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>ax</span><span class=o>.</span><span class=n>scatter</span><span class=p>([</span><span class=n>x1_vals</span><span class=p>[</span><span class=mi>0</span><span class=p>]],</span> <span class=p>[</span><span class=n>x2_vals</span><span class=p>[</span><span class=mi>0</span><span class=p>]],</span> <span class=n>color</span><span class=o>=</span><span class=s1>&#39;tab:blue&#39;</span><span class=p>,</span> <span class=n>s</span><span class=o>=</span><span class=mi>60</span><span class=p>,</span> <span class=n>label</span><span class=o>=</span><span class=s1>&#39;start&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>ax</span><span class=o>.</span><span class=n>scatter</span><span class=p>([</span><span class=n>x1_vals</span><span class=p>[</span><span class=o>-</span><span class=mi>1</span><span class=p>]],</span> <span class=p>[</span><span class=n>x2_vals</span><span class=p>[</span><span class=o>-</span><span class=mi>1</span><span class=p>]],</span> <span class=n>color</span><span class=o>=</span><span class=s1>&#39;tab:green&#39;</span><span class=p>,</span> <span class=n>s</span><span class=o>=</span><span class=mi>60</span><span class=p>,</span> <span class=n>label</span><span class=o>=</span><span class=s1>&#39;end&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=n>ax</span><span class=o>.</span><span class=n>set_xlabel</span><span class=p>(</span><span class=s1>&#39;x1&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>ax</span><span class=o>.</span><span class=n>set_ylabel</span><span class=p>(</span><span class=s1>&#39;x2&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>ax</span><span class=o>.</span><span class=n>set_title</span><span class=p>(</span><span class=n>t</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>ax</span><span class=o>.</span><span class=n>legend</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>        <span class=n>ax</span><span class=o>.</span><span class=n>grid</span><span class=p>(</span><span class=n>alpha</span><span class=o>=</span><span class=mf>0.3</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>plt</span><span class=o>.</span><span class=n>tight_layout</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=n>plt</span><span class=o>.</span><span class=n>show</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>_trace2d_pending</span> <span class=o>=</span> <span class=p>[]</span>
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=k>def</span> <span class=nf>f_2d</span><span class=p>(</span><span class=n>x1</span><span class=p>,</span> <span class=n>x2</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>x1</span><span class=o>**</span><span class=mi>2</span> <span class=o>+</span> <span class=mi>2</span> <span class=o>*</span> <span class=n>x2</span><span class=o>**</span><span class=mi>2</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>gd_2d</span><span class=p>(</span><span class=n>x1</span><span class=p>,</span> <span class=n>x2</span><span class=p>,</span> <span class=n>s1</span><span class=p>,</span> <span class=n>s2</span><span class=p>,</span> <span class=n>f_grad</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=n>eta</span> <span class=o>=</span> <span class=mf>0.1</span>
+</span></span><span class=line><span class=cl>    <span class=n>g1</span><span class=p>,</span> <span class=n>g2</span> <span class=o>=</span> <span class=n>f_grad</span><span class=p>(</span><span class=n>x1</span><span class=p>,</span> <span class=n>x2</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>x1</span> <span class=o>-</span> <span class=n>eta</span> <span class=o>*</span> <span class=n>g1</span><span class=p>,</span> <span class=n>x2</span> <span class=o>-</span> <span class=n>eta</span> <span class=o>*</span> <span class=n>g2</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=mi>0</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>f_2d_grad</span><span class=p>(</span><span class=n>x1</span><span class=p>,</span> <span class=n>x2</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=mi>2</span> <span class=o>*</span> <span class=n>x1</span><span class=p>,</span> <span class=mi>4</span> <span class=o>*</span> <span class=n>x2</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>res_2d</span> <span class=o>=</span> <span class=n>train_2d</span><span class=p>(</span><span class=n>gd_2d</span><span class=p>,</span> <span class=n>steps</span><span class=o>=</span><span class=mi>20</span><span class=p>,</span> <span class=n>f_grad</span><span class=o>=</span><span class=n>f_2d_grad</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>show_trace_2d</span><span class=p>(</span><span class=n>f_2d</span><span class=p>,</span> <span class=n>res_2d</span><span class=p>,</span> <span class=n>title</span><span class=o>=</span><span class=s1>&#39;GD on f(x1,x2)=x1^2+2x2^2&#39;</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><pre><code>epoch20, x1:-0.057646, x2:-0.000073
+</code></pre><p><img loading=lazy src=https://qbning.github.io/img/优化算法学习/优化算法学习_15_1.svg></p><p>学习率的选取决定学习的效果，一些自适应方法可能不能直接用于深度学习</p><h1 id=随机梯度下降>随机梯度下降<a hidden class=anchor aria-hidden=true href=#随机梯度下降>#</a></h1><p>普通的梯度下降的损失函数是所有样本的和</p>$$L(\theta) = \sum_{i=1}^{N} L_i(\theta)$$<p>每次参数更新都需要重新计算\(N\)个样本梯度值和</p>$$\theta = \theta - \eta \cdot \nabla \left( \sum_{i=1}^{N} L_i(\theta) \right) = \theta - \eta \cdot \sum_{i=1}^{N} \nabla L_i(\theta)$$<p>当\(N\)的规模过大时，普通梯度下降的时空复杂度可能难以接受</p><p>既然计算所有\(N\)个样本太慢，那每次更新时，只随机抽取一小部分样本（甚至只有一个样本）来计算损失函数和估算梯度，会发生什么？</p><p>假设我们在每次迭代 \(t\) 时，从全部数据中随机均匀采样一个大小为 \(|B|\) 的子集 \(B_t\)（其中 \(B_t \subset \{1, ..., N\}\)）。我们用这个子集的平均梯度来<strong>近似</strong>整体梯度：</p>$$\nabla L(\theta) \approx \frac{1}{|B|} \sum_{i \in B_t} \nabla L_i(\theta)$$<p>此时，参数更新公式变为：</p>$$\theta = \theta - \eta \cdot \frac{1}{|B|} \sum_{i \in B_t} \nabla L_i(\theta)$$<p>特别地，当 \(|B|=1\) 时，即每次只随机选<strong>一个样本</strong> \(i\)，这就是最原始的<strong>随机梯度下降（SGD）</strong>：</p>$$\theta = \theta - \eta \cdot \nabla L_i(\theta)$$<p>那用部分估计整体靠谱吗？</p>$$E\left[ \frac{1}{|B|} \sum_{i \in B_t} \nabla L_i(\theta) \right] =\frac{1}{|B|} \sum_{i \in B_t}E\left[ \nabla L_i(\theta) \right] = \frac{1}{N} \sum_{i=1}^{N} E\left[ \nabla L_i(\theta) \right]= \frac{1}{N} \sum_{i=1}^{N} \nabla L_i(\theta) = \nabla L(\theta)$$<p>所以说随机梯度是对完整梯度的<a href=https://baike.baidu.com/item/%E6%97%A0%E5%81%8F%E4%BC%B0%E8%AE%A1/3370664 target=_blank><strong>无偏估计</strong></a></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=k>def</span> <span class=nf>sgd</span><span class=p>(</span><span class=n>x1</span><span class=p>,</span><span class=n>x2</span><span class=p>,</span><span class=n>s1</span><span class=p>,</span><span class=n>s2</span><span class=p>,</span><span class=n>f_grad</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=n>g1</span><span class=p>,</span><span class=n>g2</span> <span class=o>=</span> <span class=n>f_grad</span><span class=p>(</span><span class=n>x1</span><span class=p>,</span><span class=n>x2</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=c1># 增加随机噪声，实际中只用部分样本计算的梯度自带噪声</span>
+</span></span><span class=line><span class=cl>    <span class=n>g1</span> <span class=o>+=</span> <span class=n>torch</span><span class=o>.</span><span class=n>normal</span><span class=p>(</span><span class=mf>0.0</span><span class=p>,</span><span class=mi>1</span><span class=p>,(</span><span class=mi>1</span><span class=p>,))</span>
+</span></span><span class=line><span class=cl>    <span class=n>g2</span> <span class=o>+=</span> <span class=n>torch</span><span class=o>.</span><span class=n>normal</span><span class=p>(</span><span class=mf>0.0</span><span class=p>,</span><span class=mi>1</span><span class=p>,(</span><span class=mi>1</span><span class=p>,))</span>
+</span></span><span class=line><span class=cl>    <span class=n>eta_t</span> <span class=o>=</span> <span class=n>eta</span> <span class=o>*</span><span class=n>lr</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=p>(</span><span class=n>x1</span><span class=o>-</span><span class=n>eta_t</span><span class=o>*</span><span class=n>g1</span><span class=p>,</span><span class=n>x2</span><span class=o>-</span><span class=n>eta_t</span><span class=o>*</span><span class=n>g2</span><span class=p>,</span><span class=mi>0</span><span class=p>,</span><span class=mi>0</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>constant_lr</span><span class=p>():</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=mi>1</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>eta</span> <span class=o>=</span> <span class=mf>0.1</span>
+</span></span><span class=line><span class=cl><span class=n>lr</span> <span class=o>=</span> <span class=n>constant_lr</span>
+</span></span><span class=line><span class=cl><span class=n>res_2d</span> <span class=o>=</span> <span class=n>train_2d</span><span class=p>(</span><span class=n>sgd</span><span class=p>,</span> <span class=n>steps</span><span class=o>=</span><span class=mi>50</span><span class=p>,</span> <span class=n>f_grad</span><span class=o>=</span><span class=n>f_2d_grad</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>show_trace_2d</span><span class=p>(</span><span class=n>f_2d</span><span class=p>,</span> <span class=n>res_2d</span><span class=p>,</span> <span class=n>title</span><span class=o>=</span><span class=s1>&#39;GD on f(x1,x2)=x1^2+2x2^2&#39;</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><pre><code>epoch50, x1:-0.401927, x2:-0.046643
+</code></pre><p><img loading=lazy src=https://qbning.github.io/img/优化算法学习/优化算法学习_18_1.svg></p><p>尽管迭代了\(50\)次，效果看起来不如普通的梯度下降，那么剩下能改变的就是学习率了，固定的学习率无法兼具“启动快（此处不是鸡煲笑话），收敛稳”的效果。</p><p>为了解决这个矛盾，我们将学习率从常数 \(\eta\) 变为关于迭代步数 \(t\) 的函数 \(\eta_t\)。
+SGD 的更新公式演变为：</p>$$\theta_{t+1} = \theta_t - \eta_t \cdot \nabla L_i(\theta_t)$$<p>在实际应用中，我们通常使用以下几种调度方式：</p><table><thead><tr><th style=text-align:left>策略</th><th style=text-align:left>公式示例</th><th style=text-align:left>特点</th></tr></thead><tbody><tr><td style=text-align:left><strong>指数衰减</strong></td><td style=text-align:left>\(\eta_t = \eta_0 \cdot \gamma^t\)</td><td style=text-align:left>学习率随步数指数级下降，衰减速度快</td></tr><tr><td style=text-align:left><strong>分段常数</strong></td><td style=text-align:left>每 30 轮 \(\eta\) 除以 10</td><td style=text-align:left>实现简单，便于手动控制关键阶段的精度</td></tr><tr><td style=text-align:left><strong>多项式衰减</strong></td><td style=text-align:left>\(\eta_t = \eta_0 \cdot (1 - \frac{t}{T})^k\)</td><td style=text-align:left>随训练进度平滑下降，常用于深度学习</td></tr></tbody></table><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>math</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>exponential_lr</span><span class=p>():</span>
+</span></span><span class=line><span class=cl>    <span class=k>global</span> <span class=n>t</span>
+</span></span><span class=line><span class=cl>    <span class=n>t</span> <span class=o>+=</span> <span class=mi>1</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>math</span><span class=o>.</span><span class=n>exp</span><span class=p>(</span><span class=o>-</span><span class=mf>0.1</span> <span class=o>*</span> <span class=n>t</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>t</span> <span class=o>=</span> <span class=mi>1</span>
+</span></span><span class=line><span class=cl><span class=n>lr</span> <span class=o>=</span> <span class=n>exponential_lr</span>
+</span></span><span class=line><span class=cl><span class=n>res_2d</span> <span class=o>=</span> <span class=n>train_2d</span><span class=p>(</span><span class=n>sgd</span><span class=p>,</span> <span class=n>steps</span><span class=o>=</span><span class=mi>50</span><span class=p>,</span> <span class=n>f_grad</span><span class=o>=</span><span class=n>f_2d_grad</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>show_trace_2d</span><span class=p>(</span><span class=n>f_2d</span><span class=p>,</span> <span class=n>res_2d</span><span class=p>,</span> <span class=n>title</span><span class=o>=</span><span class=s1>&#39;GD on f(x1,x2)=x1^2+2x2^2&#39;</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><pre><code>epoch50, x1:-0.788887, x2:0.064546
+</code></pre><p><img loading=lazy src=https://qbning.github.io/img/优化算法学习/优化算法学习_20_1.svg></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=k>def</span> <span class=nf>polynomial_lr</span><span class=p>():</span>
+</span></span><span class=line><span class=cl>    <span class=k>global</span> <span class=n>t</span>
+</span></span><span class=line><span class=cl>    <span class=n>t</span> <span class=o>+=</span> <span class=mi>1</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=p>(</span><span class=mi>1</span> <span class=o>+</span> <span class=mf>0.1</span> <span class=o>*</span> <span class=n>t</span><span class=p>)</span> <span class=o>**</span> <span class=p>(</span><span class=o>-</span><span class=mf>0.5</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>t</span> <span class=o>=</span> <span class=mi>1</span>
+</span></span><span class=line><span class=cl><span class=n>lr</span> <span class=o>=</span> <span class=n>polynomial_lr</span>
+</span></span><span class=line><span class=cl><span class=n>res_2d</span> <span class=o>=</span> <span class=n>train_2d</span><span class=p>(</span><span class=n>sgd</span><span class=p>,</span> <span class=n>steps</span><span class=o>=</span><span class=mi>50</span><span class=p>,</span> <span class=n>f_grad</span><span class=o>=</span><span class=n>f_2d_grad</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>show_trace_2d</span><span class=p>(</span><span class=n>f_2d</span><span class=p>,</span> <span class=n>res_2d</span><span class=p>,</span> <span class=n>title</span><span class=o>=</span><span class=s1>&#39;GD on f(x1,x2)=x1^2+2x2^2&#39;</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><pre><code>epoch50, x1:0.108062, x2:0.041646
+</code></pre><p><img loading=lazy src=https://qbning.github.io/img/优化算法学习/优化算法学习_21_1.svg></p><p>随机梯度下降只用一个样本进行更新，这也带来了劣势。首先是向量运算无法充分利用 GPU 的矩阵并行计算能力，其次是单样本梯度估计的方差较大，导致收敛路径震荡剧烈。为解决这两个问题，实际使用时通常用<strong>小批量随机梯度下降</strong></p><p>单个样本的方差是</p>$$\text{Var}(\hat{g}) = \text{Var}(g_i) = \sigma^2$$<p>估计量是 \(m\) 个样本梯度的平均值</p>$$\hat{g}_{\text{m}} = \frac{1}{m} \sum_{j=1}^{m} g_{i_j}$$<p>要计算这个平均值的方差,需要利用方差的两个性质，假设样本独立同分布：</p><ol><li>\(\text{Var}(cX) = c^2 \text{Var}(X)\)</li><li>若 \(X, Y\) 独立，\(\text{Var}(X+Y) = \text{Var}(X) + \text{Var}(Y)\)</li></ol><p>推导过程如下：</p>$$
+\begin{aligned}
+\text{Var}(\hat{g}_{\text{m}}) &= \text{Var}\left( \frac{1}{m} \sum_{j=1}^{m} g_{i_j} \right) \\
+&= \frac{1}{m^2} \text{Var}\left( \sum_{j=1}^{m} g_{i_j} \right) \quad \leftarrow \text{性质 1 } \\
+&= \frac{1}{m^2} \sum_{j=1}^{m} \text{Var}(g_{i_j}) \quad \leftarrow \text{性质 2} \\
+&= \frac{1}{m^2} \cdot m \cdot \sigma^2 \quad \leftarrow \text{共有 } m \text{ 个项，每项方差为 } \sigma^2 \\
+&= \frac{\sigma^2}{m}
+\end{aligned}
+$$<p>所以说，当\(m\)增大时，梯度方差是降低的</p><blockquote><p>本节后续内容还请自行阅读书籍啦</p></blockquote><hr><p>SGD看起来已经可以兼顾时间空间，<del>本文结束了！优化算法的时代结&mldr;..</del></p><p>真，真的吗？</p><p>我们不妨来看下面的情况，使用普通的SGD</p><p>$f(x_1,x_2)=0.1x_1^2+10x_2^2$</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=k>def</span> <span class=nf>f_2d</span><span class=p>(</span><span class=n>x1</span><span class=p>,</span><span class=n>x2</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=mf>0.1</span><span class=o>*</span><span class=n>x1</span><span class=o>**</span><span class=mi>2</span><span class=o>+</span><span class=mi>10</span><span class=o>*</span><span class=n>x2</span><span class=o>**</span><span class=mi>2</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>f_2d_grad</span><span class=p>(</span><span class=n>x1</span><span class=p>,</span> <span class=n>x2</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span>  <span class=mf>0.2</span> <span class=o>*</span> <span class=n>x1</span><span class=p>,</span> <span class=mi>20</span> <span class=o>*</span> <span class=n>x2</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>sgd</span><span class=p>(</span><span class=n>x1</span><span class=p>,</span><span class=n>x2</span><span class=p>,</span><span class=n>s1</span><span class=p>,</span><span class=n>s2</span><span class=p>,</span><span class=n>f_grad</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=n>g1</span><span class=p>,</span><span class=n>g2</span> <span class=o>=</span> <span class=n>f_grad</span><span class=p>(</span><span class=n>x1</span><span class=p>,</span><span class=n>x2</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=c1># 增加随机噪声，实际中只用部分样本计算的梯度自带噪声</span>
+</span></span><span class=line><span class=cl>    <span class=n>g1</span> <span class=o>+=</span> <span class=n>torch</span><span class=o>.</span><span class=n>normal</span><span class=p>(</span><span class=mf>0.0</span><span class=p>,</span><span class=mi>1</span><span class=p>,(</span><span class=mi>1</span><span class=p>,))</span>
+</span></span><span class=line><span class=cl>    <span class=n>g2</span> <span class=o>+=</span> <span class=n>torch</span><span class=o>.</span><span class=n>normal</span><span class=p>(</span><span class=mf>0.0</span><span class=p>,</span><span class=mi>1</span><span class=p>,(</span><span class=mi>1</span><span class=p>,))</span>
+</span></span><span class=line><span class=cl>    <span class=n>eta_t</span> <span class=o>=</span> <span class=n>eta</span> <span class=o>*</span><span class=n>lr</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=p>(</span><span class=n>x1</span><span class=o>-</span><span class=n>eta_t</span><span class=o>*</span><span class=n>g1</span><span class=p>,</span><span class=n>x2</span><span class=o>-</span><span class=n>eta_t</span><span class=o>*</span><span class=n>g2</span><span class=p>,</span><span class=mi>0</span><span class=p>,</span><span class=mi>0</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>t</span> <span class=o>=</span> <span class=mi>1</span>
+</span></span><span class=line><span class=cl><span class=n>eta</span> <span class=o>=</span> <span class=mf>0.1</span>
+</span></span><span class=line><span class=cl><span class=n>lr</span> <span class=o>=</span> <span class=n>polynomial_lr</span>
+</span></span><span class=line><span class=cl><span class=n>res_2d</span> <span class=o>=</span> <span class=n>train_2d</span><span class=p>(</span><span class=n>sgd</span><span class=p>,</span> <span class=n>steps</span><span class=o>=</span><span class=mi>100</span><span class=p>,</span> <span class=n>f_grad</span><span class=o>=</span><span class=n>f_2d_grad</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>show_trace_2d</span><span class=p>(</span><span class=n>f_2d</span><span class=p>,</span> <span class=n>res_2d</span><span class=p>,</span> <span class=n>title</span><span class=o>=</span><span class=s1>&#39;SGD on f(x1,x2)=0.1*x1^2+10*x2^2&#39;</span><span class=p>,</span><span class=n>show_trace</span><span class=o>=</span><span class=kc>False</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>t</span> <span class=o>=</span> <span class=mi>1</span>
+</span></span><span class=line><span class=cl><span class=n>eta</span> <span class=o>=</span> <span class=mf>0.1</span>
+</span></span><span class=line><span class=cl><span class=n>res_2d</span> <span class=o>=</span> <span class=n>train_2d</span><span class=p>(</span><span class=n>sgd</span><span class=p>,</span> <span class=n>steps</span><span class=o>=</span><span class=mi>500</span><span class=p>,</span> <span class=n>f_grad</span><span class=o>=</span><span class=n>f_2d_grad</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>show_trace_2d</span><span class=p>(</span><span class=n>f_2d</span><span class=p>,</span> <span class=n>res_2d</span><span class=p>,</span> <span class=n>title</span><span class=o>=</span><span class=s1>&#39;SGD on f(x1,x2)=0.1*x1^2+10*x2^2&#39;</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><pre><code>epoch100, x1:-2.063512, x2:0.006416
+epoch500, x1:-0.561228, x2:-0.032223
+</code></pre><p><img loading=lazy src=https://qbning.github.io/img/优化算法学习/优化算法学习_24_1.png></p><p>可以看到在“狭长峡谷”上非常缓慢地向右前进，即使提高步数也是杯水车薪。那么如果提高学习率呢？</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=n>t</span> <span class=o>=</span> <span class=mi>1</span>
+</span></span><span class=line><span class=cl><span class=n>eta</span> <span class=o>=</span> <span class=mf>0.2</span>
+</span></span><span class=line><span class=cl><span class=n>lr</span> <span class=o>=</span> <span class=n>polynomial_lr</span>
+</span></span><span class=line><span class=cl><span class=n>res_2d</span> <span class=o>=</span> <span class=n>train_2d</span><span class=p>(</span><span class=n>sgd</span><span class=p>,</span> <span class=n>steps</span><span class=o>=</span><span class=mi>100</span><span class=p>,</span> <span class=n>f_grad</span><span class=o>=</span><span class=n>f_2d_grad</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>show_trace_2d</span><span class=p>(</span><span class=n>f_2d</span><span class=p>,</span> <span class=n>res_2d</span><span class=p>,</span> <span class=n>title</span><span class=o>=</span><span class=s1>&#39;SGD on f(x1,x2)=0.1*x1^2+10*x2^2&#39;</span><span class=p>,</span><span class=n>show_trace</span><span class=o>=</span><span class=kc>False</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>t</span> <span class=o>=</span> <span class=mi>1</span>
+</span></span><span class=line><span class=cl><span class=n>eta</span> <span class=o>=</span> <span class=mf>0.2</span>
+</span></span><span class=line><span class=cl><span class=n>res_2d</span> <span class=o>=</span> <span class=n>train_2d</span><span class=p>(</span><span class=n>sgd</span><span class=p>,</span> <span class=n>steps</span><span class=o>=</span><span class=mi>500</span><span class=p>,</span> <span class=n>f_grad</span><span class=o>=</span><span class=n>f_2d_grad</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>show_trace_2d</span><span class=p>(</span><span class=n>f_2d</span><span class=p>,</span> <span class=n>res_2d</span><span class=p>,</span> <span class=n>title</span><span class=o>=</span><span class=s1>&#39;SGD on f(x1,x2)=0.1*x1^2+10*x2^2&#39;</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><pre><code>epoch100, x1:-0.517543, x2:0.074684
+epoch500, x1:-0.294282, x2:-0.027534
+</code></pre><p><img loading=lazy src=https://qbning.github.io/img/优化算法学习/优化算法学习_26_1.png></p><p>看起来非常恐怖，中间反复横跳，甚至绝对值一度超过了$400000$，或者我们试试更低的学习率</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=n>t</span> <span class=o>=</span> <span class=mi>1</span>
+</span></span><span class=line><span class=cl><span class=n>eta</span> <span class=o>=</span> <span class=mf>0.02</span>
+</span></span><span class=line><span class=cl><span class=n>lr</span> <span class=o>=</span> <span class=n>polynomial_lr</span>
+</span></span><span class=line><span class=cl><span class=n>res_2d</span> <span class=o>=</span> <span class=n>train_2d</span><span class=p>(</span><span class=n>sgd</span><span class=p>,</span> <span class=n>steps</span><span class=o>=</span><span class=mi>100</span><span class=p>,</span> <span class=n>f_grad</span><span class=o>=</span><span class=n>f_2d_grad</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>show_trace_2d</span><span class=p>(</span><span class=n>f_2d</span><span class=p>,</span> <span class=n>res_2d</span><span class=p>,</span> <span class=n>title</span><span class=o>=</span><span class=s1>&#39;SGD on f(x1,x2)=0.1*x1^2+10*x2^2&#39;</span><span class=p>,</span><span class=n>show_trace</span><span class=o>=</span><span class=kc>False</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>t</span> <span class=o>=</span> <span class=mi>1</span>
+</span></span><span class=line><span class=cl><span class=n>eta</span> <span class=o>=</span> <span class=mf>0.02</span>
+</span></span><span class=line><span class=cl><span class=n>res_2d</span> <span class=o>=</span> <span class=n>train_2d</span><span class=p>(</span><span class=n>sgd</span><span class=p>,</span> <span class=n>steps</span><span class=o>=</span><span class=mi>500</span><span class=p>,</span> <span class=n>f_grad</span><span class=o>=</span><span class=n>f_2d_grad</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>show_trace_2d</span><span class=p>(</span><span class=n>f_2d</span><span class=p>,</span> <span class=n>res_2d</span><span class=p>,</span> <span class=n>title</span><span class=o>=</span><span class=s1>&#39;SGD on f(x1,x2)=0.1*x1^2+10*x2^2&#39;</span><span class=p>,</span><span class=n>show_trace</span><span class=o>=</span><span class=kc>False</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>t</span> <span class=o>=</span> <span class=mi>1</span>
+</span></span><span class=line><span class=cl><span class=n>eta</span> <span class=o>=</span> <span class=mf>0.02</span>
+</span></span><span class=line><span class=cl><span class=n>res_2d</span> <span class=o>=</span> <span class=n>train_2d</span><span class=p>(</span><span class=n>sgd</span><span class=p>,</span> <span class=n>steps</span><span class=o>=</span><span class=mi>10000</span><span class=p>,</span> <span class=n>f_grad</span><span class=o>=</span><span class=n>f_2d_grad</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>show_trace_2d</span><span class=p>(</span><span class=n>f_2d</span><span class=p>,</span> <span class=n>res_2d</span><span class=p>,</span> <span class=n>title</span><span class=o>=</span><span class=s1>&#39;SGD on f(x1,x2)=0.1*x1^2+10*x2^2&#39;</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><pre><code>epoch100, x1:-4.278404, x2:0.017078
+epoch500, x1:-3.084149, x2:0.006751
+epoch10000, x1:-0.454990, x2:-0.000830
+</code></pre><p><img loading=lazy src=https://qbning.github.io/img/优化算法学习/优化算法学习_28_1.png></p><p>这就是另一种恐怖了，$x_1$跑了$10000$轮还没有慢慢收敛到正确的地方，所以说SGD看起来并不适合这种不同自变量梯度差距较大的情况，那么可能会有疑问，普通GD呢？</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=k>def</span> <span class=nf>gd_2d</span><span class=p>(</span><span class=n>x1</span><span class=p>,</span> <span class=n>x2</span><span class=p>,</span> <span class=n>s1</span><span class=p>,</span> <span class=n>s2</span><span class=p>,</span> <span class=n>f_grad</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=n>eta</span> <span class=o>=</span> <span class=mf>0.02</span> 
+</span></span><span class=line><span class=cl>    <span class=n>g1</span><span class=p>,</span> <span class=n>g2</span> <span class=o>=</span> <span class=n>f_grad</span><span class=p>(</span><span class=n>x1</span><span class=p>,</span> <span class=n>x2</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>x1</span> <span class=o>-</span> <span class=n>eta</span> <span class=o>*</span> <span class=n>g1</span><span class=p>,</span> <span class=n>x2</span> <span class=o>-</span> <span class=n>eta</span> <span class=o>*</span> <span class=n>g2</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=mi>0</span>
+</span></span><span class=line><span class=cl><span class=n>res_2d</span> <span class=o>=</span> <span class=n>train_2d</span><span class=p>(</span><span class=n>gd_2d</span><span class=p>,</span> <span class=n>steps</span><span class=o>=</span><span class=mi>50</span><span class=p>,</span> <span class=n>f_grad</span><span class=o>=</span><span class=n>f_2d_grad</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>show_trace_2d</span><span class=p>(</span><span class=n>f_2d</span><span class=p>,</span> <span class=n>res_2d</span><span class=p>,</span> <span class=n>title</span><span class=o>=</span><span class=s1>&#39;GD on f(x1,x2)=0.1*x1^2+10*x2^2&#39;</span><span class=p>,</span><span class=n>show_trace</span><span class=o>=</span><span class=kc>False</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>res_2d</span> <span class=o>=</span> <span class=n>train_2d</span><span class=p>(</span><span class=n>gd_2d</span><span class=p>,</span> <span class=n>steps</span><span class=o>=</span><span class=mi>5000</span><span class=p>,</span> <span class=n>f_grad</span><span class=o>=</span><span class=n>f_2d_grad</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>show_trace_2d</span><span class=p>(</span><span class=n>f_2d</span><span class=p>,</span> <span class=n>res_2d</span><span class=p>,</span> <span class=n>title</span><span class=o>=</span><span class=s1>&#39;GD on f(x1,x2)=0.1*x1^2+10*x2^2&#39;</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><pre><code>epoch50, x1:-4.092012, x2:-0.000000
+epoch5000, x1:-0.000000, x2:-0.000000
+</code></pre><p><img loading=lazy src=https://qbning.github.io/img/优化算法学习/优化算法学习_30_1.png></p><p>没想到同样的学习率，普通的GD竟然只用了$5000$轮就完成了收敛。还可能存在一种疑问，就是如果SGD换成固定学习率或者是稍微高点的学习率呢？</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=n>t</span> <span class=o>=</span> <span class=mi>1</span>
+</span></span><span class=line><span class=cl><span class=n>eta</span> <span class=o>=</span> <span class=mf>0.02</span>
+</span></span><span class=line><span class=cl><span class=n>lr</span> <span class=o>=</span> <span class=n>constant_lr</span>
+</span></span><span class=line><span class=cl><span class=n>res_2d</span> <span class=o>=</span> <span class=n>train_2d</span><span class=p>(</span><span class=n>sgd</span><span class=p>,</span> <span class=n>steps</span><span class=o>=</span><span class=mi>100</span><span class=p>,</span> <span class=n>f_grad</span><span class=o>=</span><span class=n>f_2d_grad</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>show_trace_2d</span><span class=p>(</span><span class=n>f_2d</span><span class=p>,</span> <span class=n>res_2d</span><span class=p>,</span> <span class=n>title</span><span class=o>=</span><span class=s1>&#39;SGD on f(x1,x2)=0.1*x1^2+10*x2^2&#39;</span><span class=p>,</span><span class=n>show_trace</span><span class=o>=</span><span class=kc>False</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>t</span> <span class=o>=</span> <span class=mi>1</span>
+</span></span><span class=line><span class=cl><span class=n>eta</span> <span class=o>=</span> <span class=mf>0.02</span>
+</span></span><span class=line><span class=cl><span class=n>res_2d</span> <span class=o>=</span> <span class=n>train_2d</span><span class=p>(</span><span class=n>sgd</span><span class=p>,</span> <span class=n>steps</span><span class=o>=</span><span class=mi>500</span><span class=p>,</span> <span class=n>f_grad</span><span class=o>=</span><span class=n>f_2d_grad</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>show_trace_2d</span><span class=p>(</span><span class=n>f_2d</span><span class=p>,</span> <span class=n>res_2d</span><span class=p>,</span> <span class=n>title</span><span class=o>=</span><span class=s1>&#39;SGD on f(x1,x2)=0.1*x1^2+10*x2^2&#39;</span><span class=p>,</span><span class=n>show_trace</span><span class=o>=</span><span class=kc>False</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>t</span> <span class=o>=</span> <span class=mi>1</span>
+</span></span><span class=line><span class=cl><span class=n>eta</span> <span class=o>=</span> <span class=mf>0.02</span>
+</span></span><span class=line><span class=cl><span class=n>res_2d</span> <span class=o>=</span> <span class=n>train_2d</span><span class=p>(</span><span class=n>sgd</span><span class=p>,</span> <span class=n>steps</span><span class=o>=</span><span class=mi>10000</span><span class=p>,</span> <span class=n>f_grad</span><span class=o>=</span><span class=n>f_2d_grad</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>show_trace_2d</span><span class=p>(</span><span class=n>f_2d</span><span class=p>,</span> <span class=n>res_2d</span><span class=p>,</span> <span class=n>title</span><span class=o>=</span><span class=s1>&#39;SGD on f(x1,x2)=0.1*x1^2+10*x2^2&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>t</span> <span class=o>=</span> <span class=mi>1</span>
+</span></span><span class=line><span class=cl><span class=n>eta</span> <span class=o>=</span> <span class=mf>0.05</span>
+</span></span><span class=line><span class=cl><span class=n>lr</span> <span class=o>=</span> <span class=n>polynomial_lr</span>
+</span></span><span class=line><span class=cl><span class=n>res_2d</span> <span class=o>=</span> <span class=n>train_2d</span><span class=p>(</span><span class=n>sgd</span><span class=p>,</span> <span class=n>steps</span><span class=o>=</span><span class=mi>100</span><span class=p>,</span> <span class=n>f_grad</span><span class=o>=</span><span class=n>f_2d_grad</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>show_trace_2d</span><span class=p>(</span><span class=n>f_2d</span><span class=p>,</span> <span class=n>res_2d</span><span class=p>,</span> <span class=n>title</span><span class=o>=</span><span class=s1>&#39;SGD on f(x1,x2)=0.1*x1^2+10*x2^2&#39;</span><span class=p>,</span><span class=n>show_trace</span><span class=o>=</span><span class=kc>False</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>t</span> <span class=o>=</span> <span class=mi>1</span>
+</span></span><span class=line><span class=cl><span class=n>eta</span> <span class=o>=</span> <span class=mf>0.05</span>
+</span></span><span class=line><span class=cl><span class=n>res_2d</span> <span class=o>=</span> <span class=n>train_2d</span><span class=p>(</span><span class=n>sgd</span><span class=p>,</span> <span class=n>steps</span><span class=o>=</span><span class=mi>500</span><span class=p>,</span> <span class=n>f_grad</span><span class=o>=</span><span class=n>f_2d_grad</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>show_trace_2d</span><span class=p>(</span><span class=n>f_2d</span><span class=p>,</span> <span class=n>res_2d</span><span class=p>,</span> <span class=n>title</span><span class=o>=</span><span class=s1>&#39;SGD on f(x1,x2)=0.1*x1^2+10*x2^2&#39;</span><span class=p>,</span><span class=n>show_trace</span><span class=o>=</span><span class=kc>False</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>t</span> <span class=o>=</span> <span class=mi>1</span>
+</span></span><span class=line><span class=cl><span class=n>eta</span> <span class=o>=</span> <span class=mf>0.05</span>
+</span></span><span class=line><span class=cl><span class=n>res_2d</span> <span class=o>=</span> <span class=n>train_2d</span><span class=p>(</span><span class=n>sgd</span><span class=p>,</span> <span class=n>steps</span><span class=o>=</span><span class=mi>10000</span><span class=p>,</span> <span class=n>f_grad</span><span class=o>=</span><span class=n>f_2d_grad</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>show_trace_2d</span><span class=p>(</span><span class=n>f_2d</span><span class=p>,</span> <span class=n>res_2d</span><span class=p>,</span> <span class=n>title</span><span class=o>=</span><span class=s1>&#39;SGD on f(x1,x2)=0.1*x1^2+10*x2^2&#39;</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><pre><code>epoch100, x1:-3.211442, x2:0.000465
+epoch500, x1:-0.571092, x2:0.041077
+epoch10000, x1:-0.426865, x2:0.001753
+</code></pre><p><img loading=lazy src=https://qbning.github.io/img/优化算法学习/优化算法学习_32_1.png></p><pre><code>epoch100, x1:-3.305861, x2:-0.013946
+epoch500, x1:-1.492732, x2:0.022477
+epoch10000, x1:-0.007610, x2:0.010288
+</code></pre><p><img loading=lazy src=https://qbning.github.io/img/优化算法学习/优化算法学习_32_3.png></p><p>几乎可以确认，SGD在这个问题上速度竟然不如原版GD了，甚至有的时候会跳过正确答案，在两边反复横跳</p><p>考虑下这个问题，在$x_1$, $x_2$两个方向上的梯度差距过大，相同学习率的情况下，一个反复横跳，一个慢吞吞走。我们想要的是让反复横跳的慢点，然后慢吞吞的那个快点，换言之就是给走的过快的反复横跳的调低学习率，给走得慢的提高学习率。如何实现呢？</p><p>我们要先考虑什么是“反复横跳”，就是梯度发生了进行正负变换，同时学习率与梯度相乘的绝对值是大于当前位置与收敛点的距离的；而“慢吞吞”的则说明梯度正负保持不变，仅仅是梯度较小</p><p>考虑到这个性质，很直接就能想到，“横跳”在一些统计学特征与“慢吞吞”的有明显差异，当然，这是后面的部分了。</p><p>还可以注意到累加会让横跳的正负抵消掉，同时让慢吞吞的累加变大（我感觉我没法“注意到”）</p><p>那么这就是引入下面的方法了：</p><h1 id=动量法>动量法<a hidden class=anchor aria-hidden=true href=#动量法>#</a></h1><p>维护另外的量用于累计之前的梯度，这个量被称为<strong>动量(momentum)</strong> $v$，还可以引入一个$\beta \in [0,1]$来调控历史梯度的影响（怎么感觉有点像某种RNN了）</p><p>此时的更新公式如下，其中$g_{t,t-1}$就是用$x_{t-1}计算的梯度$</p>$$ v_t \leftarrow \beta v_{t-1} + g_{t,t-1} $$<p></p>$$ x_t \leftarrow x_{t-1} - \eta v_t$$<p>接下来试试动量法效果如何吧</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=k>def</span> <span class=nf>momentum_2d</span><span class=p>(</span><span class=n>x1</span><span class=p>,</span><span class=n>x2</span><span class=p>,</span><span class=n>v1</span><span class=p>,</span><span class=n>v2</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=n>v1</span> <span class=o>=</span> <span class=n>beta</span> <span class=o>*</span> <span class=n>v1</span> <span class=o>+</span> <span class=mf>0.2</span> <span class=o>*</span> <span class=n>x1</span>
+</span></span><span class=line><span class=cl>    <span class=n>v2</span> <span class=o>=</span> <span class=n>beta</span> <span class=o>*</span> <span class=n>v2</span> <span class=o>+</span> <span class=mi>20</span> <span class=o>*</span> <span class=n>x2</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>x1</span> <span class=o>-</span> <span class=n>eta</span> <span class=o>*</span> <span class=n>v1</span><span class=p>,</span> <span class=n>x2</span> <span class=o>-</span> <span class=n>eta</span> <span class=o>*</span> <span class=n>v2</span><span class=p>,</span> <span class=n>v1</span><span class=p>,</span> <span class=n>v2</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>eta</span><span class=p>,</span><span class=n>beta</span> <span class=o>=</span> <span class=mf>0.1</span><span class=p>,</span><span class=mf>0.5</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>res_2d</span> <span class=o>=</span> <span class=n>train_2d</span><span class=p>(</span><span class=n>momentum_2d</span><span class=p>,</span> <span class=n>steps</span><span class=o>=</span><span class=mi>50</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>show_trace_2d</span><span class=p>(</span><span class=n>f_2d</span><span class=p>,</span> <span class=n>res_2d</span><span class=p>,</span> <span class=n>title</span><span class=o>=</span><span class=s1>&#39;Momentum on f(x1,x2)=0.1*x1^2+10*x2^2&#39;</span><span class=p>,</span><span class=n>show</span><span class=o>=</span><span class=kc>False</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>res_2d</span> <span class=o>=</span> <span class=n>train_2d</span><span class=p>(</span><span class=n>momentum_2d</span><span class=p>,</span> <span class=n>steps</span><span class=o>=</span><span class=mi>500</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>show_trace_2d</span><span class=p>(</span><span class=n>f_2d</span><span class=p>,</span> <span class=n>res_2d</span><span class=p>,</span> <span class=n>title</span><span class=o>=</span><span class=s1>&#39;Momentum on f(x1,x2)=0.1*x1^2+10*x2^2&#39;</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><pre><code>epoch50, x1:-0.620000, x2:0.000000
+epoch500, x1:-0.000000, x2:-0.000000
+</code></pre><p><img loading=lazy src=https://qbning.github.io/img/优化算法学习/优化算法学习_34_1.png></p><p>可以看到仅仅需要$500$次，动量法就很好地收敛了。</p><p>可以在 <a href=https://distill.pub/2017/momentum/ target=_blank>Why Momentum Really Works</a> 交互体验效果</p><p>$v_t$ 也可以写作 $\sum^{t-1}_{\tau=0} \beta ^{\tau} g_{t-\tau,t-\tau -1} $，也就是说第$i$个梯度对第$j$个梯度的影响是$\beta ^{j-i} g_i$</p><p>而 $\sum^{\infty}_{\tau=0} \beta ^{\tau} = \frac{1}{1-\beta}$，所以说动量法会让按照之前学习率的更新步长$\eta v_t$变成$(1-\beta)$倍。所以需要调整新的学习率为$\frac{\eta}{1-\beta}$</p><blockquote><p>本节后续内容还请自行阅读书籍啦</p></blockquote><hr><p>所以说动量法就无敌了吗？</p><p>500步似乎还是太多了，能不能让它学习得再快点？</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=k>def</span> <span class=nf>momentum_2d</span><span class=p>(</span><span class=n>x1</span><span class=p>,</span><span class=n>x2</span><span class=p>,</span><span class=n>v1</span><span class=p>,</span><span class=n>v2</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=n>v1</span> <span class=o>=</span> <span class=n>beta</span> <span class=o>*</span> <span class=n>v1</span> <span class=o>+</span> <span class=mf>0.2</span> <span class=o>*</span> <span class=n>x1</span>
+</span></span><span class=line><span class=cl>    <span class=n>v2</span> <span class=o>=</span> <span class=n>beta</span> <span class=o>*</span> <span class=n>v2</span> <span class=o>+</span> <span class=mi>20</span> <span class=o>*</span> <span class=n>x2</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>x1</span> <span class=o>-</span> <span class=n>eta</span> <span class=o>*</span> <span class=n>v1</span><span class=p>,</span> <span class=n>x2</span> <span class=o>-</span> <span class=n>eta</span> <span class=o>*</span> <span class=n>v2</span><span class=p>,</span> <span class=n>v1</span><span class=p>,</span> <span class=n>v2</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>eta</span><span class=p>,</span><span class=n>beta</span> <span class=o>=</span> <span class=mf>0.2</span><span class=p>,</span><span class=mf>0.5</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>res_2d</span> <span class=o>=</span> <span class=n>train_2d</span><span class=p>(</span><span class=n>momentum_2d</span><span class=p>,</span> <span class=n>steps</span><span class=o>=</span><span class=mi>50</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>show_trace_2d</span><span class=p>(</span><span class=n>f_2d</span><span class=p>,</span> <span class=n>res_2d</span><span class=p>,</span> <span class=n>title</span><span class=o>=</span><span class=s1>&#39;Momentum on f(x1,x2)=0.1*x1^2+10*x2^2&#39;</span><span class=p>,</span><span class=n>show</span><span class=o>=</span><span class=kc>False</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>res_2d</span> <span class=o>=</span> <span class=n>train_2d</span><span class=p>(</span><span class=n>momentum_2d</span><span class=p>,</span> <span class=n>steps</span><span class=o>=</span><span class=mi>500</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>show_trace_2d</span><span class=p>(</span><span class=n>f_2d</span><span class=p>,</span> <span class=n>res_2d</span><span class=p>,</span> <span class=n>title</span><span class=o>=</span><span class=s1>&#39;Momentum on f(x1,x2)=0.1*x1^2+10*x2^2&#39;</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><pre><code>epoch50, x1:-0.054783, x2:-2163401805974677504.000000
+epoch500, x1:-0.000000, x2:-296727278529656660666248966637069386465103612668958140152820014382534699916011834206269932680493656464553724555731126971411825227097885375901158837286072555582070825133952718602240.000000
+</code></pre><p><img loading=lazy src=https://qbning.github.io/img/优化算法学习/优化算法学习_37_2.png></p><p>可以看到，我们想让动量法快一点，结果梯度大的那个还是给爆炸了，可能会有人觉得是$\beta$太小了，一般是$0.9-0.99$</p><p>那我们再试试</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=k>def</span> <span class=nf>momentum_2d</span><span class=p>(</span><span class=n>x1</span><span class=p>,</span><span class=n>x2</span><span class=p>,</span><span class=n>v1</span><span class=p>,</span><span class=n>v2</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=n>v1</span> <span class=o>=</span> <span class=n>beta</span> <span class=o>*</span> <span class=n>v1</span> <span class=o>+</span> <span class=mf>0.2</span> <span class=o>*</span> <span class=n>x1</span>
+</span></span><span class=line><span class=cl>    <span class=n>v2</span> <span class=o>=</span> <span class=n>beta</span> <span class=o>*</span> <span class=n>v2</span> <span class=o>+</span> <span class=mi>20</span> <span class=o>*</span> <span class=n>x2</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>x1</span> <span class=o>-</span> <span class=n>eta</span> <span class=o>*</span> <span class=n>v1</span><span class=p>,</span> <span class=n>x2</span> <span class=o>-</span> <span class=n>eta</span> <span class=o>*</span> <span class=n>v2</span><span class=p>,</span> <span class=n>v1</span><span class=p>,</span> <span class=n>v2</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>eta</span><span class=p>,</span><span class=n>beta</span> <span class=o>=</span> <span class=mf>0.2</span><span class=p>,</span><span class=mf>0.99</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>res_2d</span> <span class=o>=</span> <span class=n>train_2d</span><span class=p>(</span><span class=n>momentum_2d</span><span class=p>,</span> <span class=n>steps</span><span class=o>=</span><span class=mi>50</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>show_trace_2d</span><span class=p>(</span><span class=n>f_2d</span><span class=p>,</span> <span class=n>res_2d</span><span class=p>,</span> <span class=n>title</span><span class=o>=</span><span class=s1>&#39;Momentum on f(x1,x2)=0.1*x1^2+10*x2^2&#39;</span><span class=p>,</span><span class=n>show</span><span class=o>=</span><span class=kc>False</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>res_2d</span> <span class=o>=</span> <span class=n>train_2d</span><span class=p>(</span><span class=n>momentum_2d</span><span class=p>,</span> <span class=n>steps</span><span class=o>=</span><span class=mi>500</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>show_trace_2d</span><span class=p>(</span><span class=n>f_2d</span><span class=p>,</span> <span class=n>res_2d</span><span class=p>,</span> <span class=n>title</span><span class=o>=</span><span class=s1>&#39;Momentum on f(x1,x2)=0.1*x1^2+10*x2^2&#39;</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><pre><code>epoch50, x1:3.009175, x2:-14054.174423
+epoch500, x1:-0.405540, x2:-7375450158951055580489595224064.000000
+</code></pre><p><img loading=lazy src=https://qbning.github.io/img/优化算法学习/优化算法学习_39_1.png></p><p>结果依然是爆炸的</p><p>详细咨询了LLM，它提出我们的“优化算法”本质是一种时间离散的<strong>迭代法</strong>，可以利用<a href=http://www.shuxueji.com/w/1786 target=_blank><strong>Jurry依据</strong></a>来判断是否稳定。</p><p>LLM计算了目标函数的<a href=https://baike.baidu.com/item/%E9%BB%91%E5%A1%9E%E7%9F%A9%E9%98%B5/2248782 target=_blank><strong>Hessian矩阵</strong></a>的特征值$\lambda$，其中$g=\lambda x$（来源可能还需要一些补充，这里不写了）</p><p>目标函数中$x_1$,$x_2$互不影响，可以单独进行分析。先把$v_t$代入$x_t$的式子消元，得到$x$的二阶递推关系</p><p>1.由$x_{t-1}=x_{t-2}-\eta v_{t-1}$得$v_{t-1}=\frac{1}{\eta}(x_{t-2}-x_{t-1})$</p><p>2.代入$v_t$，得$v_t = \frac{\beta}{\eta}(x_{t-2}-x_{t-1}) + \lambda x_{t-1} $</p><p>3.代入$x_t$更新公式，得到</p>$$
+\begin{aligned}
+x_t &= x_t-1 -\eta[\frac{\beta}{\eta}(x_{t-2}-x_{t-1}) + \lambda x_{t-1}] \\
+&= x_t-1 -\beta(x_{t-2}-x_{t-1}) -\eta \lambda x_{t-1}\\
+&= (1-\eta \lambda+\beta)x_{t-1} -\beta x_{t-2}
+\end{aligned}
+$$<p>其特征方程为</p>$$r^2 - (1-\eta \lambda+\beta) r +\beta=0$$<p>$|r_1|<1,|r_2|<1$时收敛</p><p>然后根据Jurry依据，得到$\eta \lt \frac{2(1+\beta)}{\lambda}$</p><p>所以说，当$\beta = 0.99$时，$\eta \lt \frac{2(1+0.99)}{20} = 0.199 $</p><p>我们再试试$\eta = 0.198$</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=k>def</span> <span class=nf>momentum_2d</span><span class=p>(</span><span class=n>x1</span><span class=p>,</span><span class=n>x2</span><span class=p>,</span><span class=n>v1</span><span class=p>,</span><span class=n>v2</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=n>v1</span> <span class=o>=</span> <span class=n>beta</span> <span class=o>*</span> <span class=n>v1</span> <span class=o>+</span> <span class=mf>0.2</span> <span class=o>*</span> <span class=n>x1</span>
+</span></span><span class=line><span class=cl>    <span class=n>v2</span> <span class=o>=</span> <span class=n>beta</span> <span class=o>*</span> <span class=n>v2</span> <span class=o>+</span> <span class=mi>20</span> <span class=o>*</span> <span class=n>x2</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>x1</span> <span class=o>-</span> <span class=n>eta</span> <span class=o>*</span> <span class=n>v1</span><span class=p>,</span> <span class=n>x2</span> <span class=o>-</span> <span class=n>eta</span> <span class=o>*</span> <span class=n>v2</span><span class=p>,</span> <span class=n>v1</span><span class=p>,</span> <span class=n>v2</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>eta</span><span class=p>,</span><span class=n>beta</span> <span class=o>=</span> <span class=mf>0.198</span><span class=p>,</span><span class=mf>0.99</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>res_2d</span> <span class=o>=</span> <span class=n>train_2d</span><span class=p>(</span><span class=n>momentum_2d</span><span class=p>,</span> <span class=n>steps</span><span class=o>=</span><span class=mi>50</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>show_trace_2d</span><span class=p>(</span><span class=n>f_2d</span><span class=p>,</span> <span class=n>res_2d</span><span class=p>,</span> <span class=n>title</span><span class=o>=</span><span class=s1>&#39;Momentum on f(x1,x2)=0.1*x1^2+10*x2^2&#39;</span><span class=p>,</span><span class=n>show</span><span class=o>=</span><span class=kc>False</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>res_2d</span> <span class=o>=</span> <span class=n>train_2d</span><span class=p>(</span><span class=n>momentum_2d</span><span class=p>,</span> <span class=n>steps</span><span class=o>=</span><span class=mi>500</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>show_trace_2d</span><span class=p>(</span><span class=n>f_2d</span><span class=p>,</span> <span class=n>res_2d</span><span class=p>,</span> <span class=n>title</span><span class=o>=</span><span class=s1>&#39;Momentum on f(x1,x2)=0.1*x1^2+10*x2^2&#39;</span><span class=p>,</span><span class=n>show</span><span class=o>=</span><span class=kc>False</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>res_2d</span> <span class=o>=</span> <span class=n>train_2d</span><span class=p>(</span><span class=n>momentum_2d</span><span class=p>,</span> <span class=n>steps</span><span class=o>=</span><span class=mi>3000</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>show_trace_2d</span><span class=p>(</span><span class=n>f_2d</span><span class=p>,</span> <span class=n>res_2d</span><span class=p>,</span> <span class=n>title</span><span class=o>=</span><span class=s1>&#39;Momentum on f(x1,x2)=0.1*x1^2+10*x2^2&#39;</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><pre><code>epoch50, x1:3.131956, x2:-16.857397
+epoch500, x1:-0.341571, x2:-2.188185
+epoch3000, x1:0.000001, x2:0.000008
+</code></pre><p><img loading=lazy src=https://qbning.github.io/img/优化算法学习/优化算法学习_41_1.png></p><p>可以看到提高学习率，反而$3000$轮左右才收敛，还不如之前的参数。</p><p>那么说明我们这种简单加权累加历史梯度的效果还是有限的，要实现“给走的过快的反复横跳的调低学习率，给走得慢的提高学习率”，需要寻找其他的方法了</p><p>就像之前说的，完全可以利用两者某些统计特征的差异，来分配不同的学习率</p><p>比较好想的统计特征可能是绝对值之和、平方和、方差之类的</p><p>我们来试试绝对值之和的效果会有什么改进吧</p><p>与动量法不同，我们是要根据其统计特征对学习率进行缩放，一个可能的方式如下，这里的 $\epsilon$防止除零错误</p>$$s_t \leftarrow s_{t-1} + |g_t|, \quad x_t \leftarrow x_{t-1} - \frac{\eta}{s_t + \epsilon} g_t$$<div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=k>def</span> <span class=nf>abs_2d</span><span class=p>(</span><span class=n>x1</span><span class=p>,</span><span class=n>x2</span><span class=p>,</span><span class=n>s1</span><span class=p>,</span><span class=n>s2</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=n>s1</span> <span class=o>=</span> <span class=n>s1</span> <span class=o>+</span> <span class=nb>abs</span><span class=p>(</span><span class=mf>0.2</span> <span class=o>*</span> <span class=n>x1</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=n>s2</span> <span class=o>=</span> <span class=n>s2</span> <span class=o>+</span> <span class=nb>abs</span><span class=p>(</span><span class=mi>20</span> <span class=o>*</span> <span class=n>x2</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>x1</span> <span class=o>-</span> <span class=n>eta</span> <span class=o>/</span> <span class=p>(</span><span class=n>s1</span> <span class=o>+</span> <span class=n>epsilon</span><span class=p>)</span> <span class=o>*</span> <span class=mf>0.2</span> <span class=o>*</span> <span class=n>x1</span><span class=p>,</span><span class=n>x2</span> <span class=o>-</span> <span class=n>eta</span> <span class=o>/</span> <span class=p>(</span><span class=n>s2</span> <span class=o>+</span> <span class=n>epsilon</span><span class=p>)</span> <span class=o>*</span> <span class=mi>20</span> <span class=o>*</span> <span class=n>x2</span> <span class=p>,</span><span class=n>s1</span><span class=p>,</span><span class=n>s2</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>eta</span><span class=p>,</span><span class=n>epsilon</span> <span class=o>=</span> <span class=mi>1</span><span class=p>,</span><span class=mf>1e-6</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>res_2d</span> <span class=o>=</span> <span class=n>train_2d</span><span class=p>(</span><span class=n>abs_2d</span><span class=p>,</span> <span class=n>steps</span><span class=o>=</span><span class=mi>50</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>show_trace_2d</span><span class=p>(</span><span class=n>f_2d</span><span class=p>,</span> <span class=n>res_2d</span><span class=p>,</span> <span class=n>title</span><span class=o>=</span><span class=s1>&#39;Abs on f(x1,x2)=0.1*x1^2+10*x2^2&#39;</span><span class=p>,</span><span class=n>show</span><span class=o>=</span><span class=kc>False</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>res_2d</span> <span class=o>=</span> <span class=n>train_2d</span><span class=p>(</span><span class=n>abs_2d</span><span class=p>,</span> <span class=n>steps</span><span class=o>=</span><span class=mi>500</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>show_trace_2d</span><span class=p>(</span><span class=n>f_2d</span><span class=p>,</span> <span class=n>res_2d</span><span class=p>,</span> <span class=n>title</span><span class=o>=</span><span class=s1>&#39;Abs on f(x1,x2)=0.1*x1^2+10*x2^2&#39;</span><span class=p>,</span><span class=n>show</span><span class=o>=</span><span class=kc>False</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>res_2d</span> <span class=o>=</span> <span class=n>train_2d</span><span class=p>(</span><span class=n>abs_2d</span><span class=p>,</span> <span class=n>steps</span><span class=o>=</span><span class=mi>5000</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>show_trace_2d</span><span class=p>(</span><span class=n>f_2d</span><span class=p>,</span> <span class=n>res_2d</span><span class=p>,</span> <span class=n>title</span><span class=o>=</span><span class=s1>&#39;Abs on f(x1,x2)=0.1*x1^2+10*x2^2&#39;</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><pre><code>epoch50, x1:-1.283700, x2:-0.000064
+epoch500, x1:-0.165460, x2:-0.000000
+epoch5000, x1:-0.000001, x2:-0.000000
+</code></pre><p><img loading=lazy src=https://qbning.github.io/img/优化算法学习/优化算法学习_43_1.png></p><p>明显稳得多了，不够就是有点太慢了，如果调高学习率呢？</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=k>def</span> <span class=nf>abs_2d</span><span class=p>(</span><span class=n>x1</span><span class=p>,</span><span class=n>x2</span><span class=p>,</span><span class=n>s1</span><span class=p>,</span><span class=n>s2</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=n>s1</span> <span class=o>=</span> <span class=n>s1</span> <span class=o>+</span> <span class=nb>abs</span><span class=p>(</span><span class=mf>0.2</span> <span class=o>*</span> <span class=n>x1</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=n>s2</span> <span class=o>=</span> <span class=n>s2</span> <span class=o>+</span> <span class=nb>abs</span><span class=p>(</span><span class=mi>20</span> <span class=o>*</span> <span class=n>x2</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>x1</span> <span class=o>-</span> <span class=n>eta</span> <span class=o>/</span> <span class=p>(</span><span class=n>s1</span> <span class=o>+</span> <span class=n>epsilon</span><span class=p>)</span> <span class=o>*</span> <span class=mf>0.2</span> <span class=o>*</span> <span class=n>x1</span><span class=p>,</span><span class=n>x2</span> <span class=o>-</span> <span class=n>eta</span> <span class=o>/</span> <span class=p>(</span><span class=n>s2</span> <span class=o>+</span> <span class=n>epsilon</span><span class=p>)</span> <span class=o>*</span> <span class=mi>20</span> <span class=o>*</span> <span class=n>x2</span> <span class=p>,</span><span class=n>s1</span><span class=p>,</span><span class=n>s2</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>eta</span><span class=p>,</span><span class=n>epsilon</span> <span class=o>=</span> <span class=mi>2</span><span class=p>,</span><span class=mf>1e-6</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>res_2d</span> <span class=o>=</span> <span class=n>train_2d</span><span class=p>(</span><span class=n>abs_2d</span><span class=p>,</span> <span class=n>steps</span><span class=o>=</span><span class=mi>50</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>show_trace_2d</span><span class=p>(</span><span class=n>f_2d</span><span class=p>,</span> <span class=n>res_2d</span><span class=p>,</span> <span class=n>title</span><span class=o>=</span><span class=s1>&#39;Abs on f(x1,x2)=0.1*x1^2+10*x2^2&#39;</span><span class=p>,</span><span class=n>show</span><span class=o>=</span><span class=kc>False</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>res_2d</span> <span class=o>=</span> <span class=n>train_2d</span><span class=p>(</span><span class=n>abs_2d</span><span class=p>,</span> <span class=n>steps</span><span class=o>=</span><span class=mi>200</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>show_trace_2d</span><span class=p>(</span><span class=n>f_2d</span><span class=p>,</span> <span class=n>res_2d</span><span class=p>,</span> <span class=n>title</span><span class=o>=</span><span class=s1>&#39;Abs on f(x1,x2)=0.1*x1^2+10*x2^2&#39;</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><pre><code>epoch50, x1:-0.020967, x2:0.000000
+epoch200, x1:-0.000000, x2:0.000000
+</code></pre><p><img loading=lazy src=https://qbning.github.io/img/优化算法学习/优化算法学习_45_1.png></p><p>看起来绝对值作为统计历史梯度的方法效果还不错，那为啥人们后来还是抛弃了绝对值呢？</p><p>很明显的一个缺点是还是太慢，但本质上的问题我暂时也没有时间精力来考虑了，让我们直接跳到下一个环节,当然建议也是详细阅读原书的该部分，我不太理解,,,
+<img alt=试图蒙混过关 loading=lazy src=https://qbning.github.io/img/优化算法学习/stmhgg.png></p></div><footer class=post-footer><nav class=paginav><a class=next href=https://qbning.github.io/posts/%E8%AE%B0%E4%B8%80%E6%AC%A1unity%E8%B5%84%E6%BA%90%E8%A7%A3%E5%8C%85/><span class=title>Next »</span><br><span>记一次Unity资源解包</span></a></nav></footer><div id=giscus-container></div><script>var theme="light_tritanopia";const currentTheme=localStorage.getItem("pref-theme")||(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.body.classList.toggle("dark",currentTheme==="dark"),theme=currentTheme==="dark"?"dark_dimmed":"light_tritanopia";const script=document.createElement("script");script.src="https://giscus.app/client.js ",script.async=!0,script.crossOrigin="anonymous",script.setAttribute("data-repo","qbning/discussion"),script.setAttribute("data-repo-id","R_kgDOPMq-bw"),script.setAttribute("data-category","Announcements"),script.setAttribute("data-category-id","DIC_kwDOPMq-b84Cs95G"),script.setAttribute("data-mapping","url"),script.setAttribute("data-strict","0"),script.setAttribute("data-reactions-enabled","1"),script.setAttribute("data-emit-metadata","0"),script.setAttribute("data-input-position","top"),script.setAttribute("data-theme",theme),script.setAttribute("data-lang","zh-CN"),script.setAttribute("data-loading","lazy"),document.getElementById("giscus-container").appendChild(script)</script></article></main><center>本站总访客数 <span id=busuanzi_site_uv>加载中...</span> 人</center><footer class=footer><span>&copy; 2026 <a href=https://qbning.github.io/>qbning's site</a></span> ·
+<span>Powered by
+<a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a> &
+<a href=https://github.com/adityatelange/hugo-PaperMod/ rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top aria-label="go to top" title="Go to Top (Alt + G)" class=top-link id=top-link accesskey=g><svg viewBox="0 0 12 6" fill="currentColor"><path d="M12 6H0l6-6z"/></svg>
+</a><script>let menu=document.getElementById("menu");menu&&(menu.scrollLeft=localStorage.getItem("menu-scroll-position"),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}),document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script><script>function setGiscusTheme(e){const t=document.querySelector("iframe.giscus-frame");if(!t||!t.contentWindow)return;const n={setConfig:{theme:e}};t.contentWindow.postMessage({giscus:n},"https://giscus.app")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove("dark"),localStorage.setItem("pref-theme","light"),setGiscusTheme("light_tritanopia")):(document.body.classList.add("dark"),localStorage.setItem("pref-theme","dark"),setGiscusTheme("dark_dimmed"))})</script><script>document.querySelectorAll("pre > code").forEach(e=>{const n=e.parentNode.parentNode,t=document.createElement("button");t.classList.add("copy-code"),t.innerHTML="copy";function s(){t.innerHTML="copied!",setTimeout(()=>{t.innerHTML="copy"},2e3)}t.addEventListener("click",t=>{if("clipboard"in navigator){navigator.clipboard.writeText(e.textContent),s();return}const n=document.createRange();n.selectNodeContents(e);const o=window.getSelection();o.removeAllRanges(),o.addRange(n);try{document.execCommand("copy"),s()}catch{}o.removeRange(n)}),n.classList.contains("highlight")?n.appendChild(t):n.parentNode.firstChild==n||(e.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?e.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(t):e.parentNode.appendChild(t))})</script></body></html>

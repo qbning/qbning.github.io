@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>类别 on qbning&#39;s site</title>
+    <link>https://qbning.github.io/categories/</link>
+    <description>Recent content in 类别 on qbning&#39;s site</description>
+    <image>
+      <title>qbning&#39;s site</title>
+      <url>https://avatars.githubusercontent.com/u/88238811?v=4</url>
+      <link>https://avatars.githubusercontent.com/u/88238811?v=4</link>
+    </image>
+    <generator>Hugo -- 0.148.1</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sat, 14 Mar 2026 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://qbning.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>机器学习</title>
+      <link>https://qbning.github.io/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/</link>
+      <pubDate>Mon, 09 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://qbning.github.io/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>小寄巧</title>
+      <link>https://qbning.github.io/categories/%E5%B0%8F%E5%AF%84%E5%B7%A7/</link>
+      <pubDate>Sat, 06 Sep 2025 00:00:00 +0000</pubDate>
+      <guid>https://qbning.github.io/categories/%E5%B0%8F%E5%AF%84%E5%B7%A7/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Godot</title>
+      <link>https://qbning.github.io/categories/godot/</link>
+      <pubDate>Tue, 26 Aug 2025 00:00:00 +0000</pubDate>
+      <guid>https://qbning.github.io/categories/godot/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>博客相关</title>
+      <link>https://qbning.github.io/categories/%E5%8D%9A%E5%AE%A2%E7%9B%B8%E5%85%B3/</link>
+      <pubDate>Tue, 15 Jul 2025 00:00:00 +0000</pubDate>
+      <guid>https://qbning.github.io/categories/%E5%8D%9A%E5%AE%A2%E7%9B%B8%E5%85%B3/</guid>
+      <description></description>
+    </item>
+  </channel>
+</rss>
